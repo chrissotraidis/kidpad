@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "status": "LEGAL_ASSET_BLOCKED",
+  "updatedAt": "2026-08-21T19:19:52-05:00",
+  "branch": "feature/native-kidpad",
+  "commit": "b0db358f78edf5b407e0b9f5447325256f16e7ed",
+  "xcodeVersion": "Xcode 26.6 (17F113)",
+  "sdkVersion": "26.5",
+  "simulator": {
+    "model": "iPad Pro 11-inch (M5)",
+    "os": "iOS 26.5",
+    "udid": "B8138F85-0AE9-4494-9564-EDC7FD4E3B7F"
+  },
+  "goals": {
+    "G0": "complete_with_legal_hold",
+    "G1": "complete",
+    "G2": "complete_adaptive_native_shell",
+    "G3": "complete_simulator_with_synthetic_input",
+    "G4": "complete_for_simulator",
+    "G5": "simulator_fidelity_complete_with_documented_differences",
+    "G6": "complete_simulator",
+    "G7": "hardware_pending",
+    "G8": "simulator_verified_hardware_pending",
+    "G9": "blocked_pending_clearance"
+  },
+  "tests": {
+    "lastRun": "2026-08-21T19:19:52-05:00",
+    "passed": 63,
+    "failed": 0,
+    "skipped": 0,
+    "unitPassed": 37,
+    "uiPassed": 26
+  },
+  "blockers": [
+    "Physical Apple Pencil hardware unavailable",
+    "Historical/public asset and trademark clearance unverified",
+    "Exact-source JSKIDPIX bundle is research-only until asset clearance",
+    "In-app browser cannot reach shell-started local reference server",
+    "Actual split-view capture remains unverified"
+  ],
+  "latestEvidence": [
+    "artifacts/logs/native-full-suite-223.log",
+    "artifacts/logs/menu-dismiss-219.log",
+    "artifacts/logs/left-handed-222.log",
+    "artifacts/logs/fidelity-assets-223.log",
+    "artifacts/logs/public-build-223.log",
+    "artifacts/logs/no-network-audit-223.log",
+    "artifacts/simulator/launch-final-223.png",
+    "artifacts/simulator/filemenu-open-219.png",
+    "artifacts/simulator/filemenu-dismissed-219.png"
+  ]
+}

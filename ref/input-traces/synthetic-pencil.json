@@ -1,0 +1,11 @@
+{
+  "name": "synthetic-pencil-basic",
+  "tool": "pencil",
+  "canvasWidth": 1920,
+  "canvasHeight": 1200,
+  "events": [
+    { "phase": "began", "x": 120, "y": 180, "pressure": 0.35, "altitude": 1.20, "azimuth": 0.10, "kind": "pencil" },
+    { "phase": "moved", "x": 640, "y": 420, "pressure": 0.80, "altitude": 0.60, "azimuth": 1.20, "kind": "pencil" },
+    { "phase": "ended", "x": 1180, "y": 760, "pressure": 0.55, "altitude": 0.90, "azimuth": 2.10, "kind": "pencil" }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 2,
+  "assets": [
+    {
+      "id": "jskidpix-classic-pack",
+      "source": "https://github.com/vikrum/kidpix",
+      "commit": "99c67f3427d229f7db60b03dcf19df4d8c2a8ecf",
+      "license": "GPL-3.0 repository; underlying historical asset clearance not independently verified",
+      "status": "downloaded-after-user-consent",
+      "bundled": false,
+      "fileCount": 228,
+      "combinedSHA256": "95c89533074aa082e3030fac622997e1fb48c701ef34da2e956c154ff4c3be0f",
+      "catalog": "Sources/ClassicAssetPack.swift",
+      "storage": "Application Support/KidPad/ClassicAssetPack/<combinedSHA256>"
+    },
+    {
+      "id": "chikarego2-font",
+      "paths": [
+        "Resources/Licensed/ChiKareGo2.ttf"
+      ],
+      "source": "https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=3780",
+      "license": "Creative Commons Attribution",
+      "status": "bundled-with-attribution",
+      "bundled": true,
+      "sha256": "fba98c4ed1fb9da8d7c18e84209304941fe47b8e88472a795bb08ccb607588f7",
+      "notice": "docs/THIRD_PARTY_FONTS.md"
+    },
+    {
+      "id": "jskidpix-local-reference-harness",
+      "paths": [
+        "Resources/JSKidPix"
+      ],
+      "status": "optional-ignored-local-reference",
+      "bundled": false
+    }
+  ]
+}

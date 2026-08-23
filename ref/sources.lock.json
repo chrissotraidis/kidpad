@@ -1,0 +1,21 @@
+[
+  {
+    "sourceId": "jskidpix",
+    "url": "https://github.com/vikrum/kidpix",
+    "accessDate": "2026-08-20",
+    "retrievedCommit": "99c67f3",
+    "localPath": "ref/source-jskidpix",
+    "rightsStatus": "GPLv3 repository; bundled image rights require separate verification",
+    "permittedUse": "Private fidelity development and behavioral reference only",
+    "notes": "The repo README describes the historical project as a 1989 reimplementation; no public-release asset clearance inferred."
+  },
+  {
+    "sourceId": "kidpix-app-live",
+    "url": "https://kidpix.app/",
+    "accessDate": "2026-08-20",
+    "localPath": "ref/visual-references/kidpix-app-live-default.png",
+    "rightsStatus": "Reference screenshot only; runtime asset clearance unverified",
+    "permittedUse": "Private visual, interaction, color, sound, and behavior comparison",
+    "notes": "Live reference exposes the classic toolbar, canvas, palette, tool submenus, original-style actions, and a link to the pinned vikrum/kidpix source. Screenshot is not bundled in the app."
+  }
+]

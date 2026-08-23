@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible problem in the native KidPad app
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please search existing issues first. Do not attach credentials, private documents, ROMs, or FidelityDev/reference assets.
+  - type: input
+    id: build
+    attributes:
+      label: Build/profile
+      placeholder: ReleasePublic, DebugPublic, or commit SHA
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and OS
+      placeholder: iPad Pro 11-inch (M5), iOS 26.5 Simulator
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      placeholder: Tell us exactly what to tap and what happens.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Add screenshots, logs, or a short recording when useful.

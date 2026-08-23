@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an improvement to the native KidPad experience
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: What would a child, parent, teacher, or developer be trying to do?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: safe
+    attributes:
+      label: Public-safe
+      options:
+        - label: This request does not require adding unlicensed historical or third-party assets.
+          required: true

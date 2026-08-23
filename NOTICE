@@ -1,0 +1,67 @@
+KidPad
+Copyright 2026 Chris Sotraidis
+
+KidPad is an independent open-source project inspired by the design principles
+and early behavior of Kid Pix, created by Craig Hickman. KID PIX is a registered
+trademark of its owner. This project is not affiliated with, endorsed by, or
+licensed by The Software MacKiev Company, Craig Hickman, or any current Kid Pix
+rights holder.
+
+The original Swift/UIKit/SwiftUI source in Sources/, Tests/, UITests/, and the
+Xcode project scaffolding is licensed under Apache License 2.0. See LICENSE.
+
+This NOTICE is not legal advice. Project documentation discusses licensing and
+intellectual-property risks for engineering purposes only.
+
+==========================================================================
+Downloaded JSKidPix Classic Pack
+==========================================================================
+
+KidPad does not bundle the JSKidPix PNG/WAV Classic Pack. With user consent, it
+downloads those data files directly from the pinned upstream revision below,
+verifies the whole-pack digest, and installs them in Application Support.
+
+  https://github.com/vikrum/kidpix
+  commit 99c67f3427d229f7db60b03dcf19df4d8c2a8ecf
+  license: GPL-3.0
+
+The upstream license is the project's basis for this download. It is not an
+independent clearance opinion for every underlying historical image, audio
+file, logo, or trademark. See RIGHTS_AND_LICENSES.md.
+
+==========================================================================
+JSKidPix / vikrum/kidpix reference
+==========================================================================
+
+The pinned behavioral reference is:
+
+  https://github.com/vikrum/kidpix
+  commit 99c67f3427d229f7db60b03dcf19df4d8c2a8ecf
+  local clone: ref/source-jskidpix
+  live site: https://kidpix.app/
+
+That repository is published under GPL-3.0. KidPad does not mechanically
+translate or download that JavaScript into the native engine. The native raster
+document in Sources/CanvasCore.swift is the canonical drawing truth.
+
+Resources/JSKidPix is an optional local copy of that web implementation used only
+by the `--reference-web` comparison harness. It is gitignored and must not be
+included in ReleasePublic. WKWebView is used only for that opt-in local file URL
+harness; it is not the shipping canvas.
+
+==========================================================================
+ChiKareGo2 font
+==========================================================================
+
+KidPad bundles the unmodified ChiKareGo2 font by Giles Booth under Creative
+Commons Attribution. Source and attribution details are in
+docs/THIRD_PARTY_FONTS.md.
+
+==========================================================================
+Public name
+==========================================================================
+
+KidPad is the canonical product name. Formal trademark and marketplace clearance
+remains required before public commercial release. Historical KidPad filings and
+other products using similar names are recorded in the PRD and are not a legal
+clearance opinion.

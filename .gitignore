@@ -1,0 +1,42 @@
+# OS / Xcode
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Local evidence and tooling (keep the latest written report)
+artifacts/*
+!artifacts/reports/
+!artifacts/reports/**
+.venv/
+
+# Historical / third-party reference material that must not ship automatically
+ref/*
+!ref/README.md
+!ref/example-sources.lock.json
+!ref/sources.lock.json
+!ref/input-traces/
+!ref/input-traces/**
+
+# Private local cache. Public builds fetch this pinned pack after user consent.
+Resources/FidelityDev/*
+!Resources/FidelityDev/README.md
+
+# GPL web reference harness is copied locally from the pinned source clone
+Resources/JSKidPix/
+!Resources/JSKidPix/.gitkeep
+
+# Quarantined unverified dumps
+Resources/Quarantined/
+
+# Disk images / ROMs
+*.rom
+*.ROM
+*.dsk
+*.img
+*.sit
+*.hqx
+*.toast
+*.iso
+*.bin
