@@ -36,3 +36,4 @@ cp -f "$temporary_ipa" "$ipa_path"
 print "Public IPA: $ipa_path"
 checksum="$(shasum -a 256 "$ipa_path" | awk '{print $1}')"
 print -r -- "$checksum  KidPad-unsigned.ipa" | tee "$ipa_path.sha256"
+(cd "$output_dir" && shasum -a 256 -c KidPad-unsigned.ipa.sha256)

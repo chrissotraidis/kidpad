@@ -51,6 +51,10 @@ exercise persistence.
 ## Tests and release checks
 
 ```bash
+zsh -n Scripts/*.sh
+Scripts/verify_public_repo.sh
+Scripts/verify_no_network.sh .
+
 xcodebuild -project KidPad.xcodeproj -scheme KidPad -configuration Debug \
   -sdk iphonesimulator \
   -destination 'platform=iOS Simulator,name=iPad Pro 11-inch (M5)' \
@@ -59,9 +63,10 @@ xcodebuild -project KidPad.xcodeproj -scheme KidPad -configuration Debug \
 Scripts/verify_release_assets.sh /path/to/KidPad.app
 ```
 
-The release scanner rejects Classic Pack resources and the optional JSKidPix
-reference bundle. `Scripts/verify_fidelity_assets.sh` verifies the ignored
-private test cache only and is not a publication check.
+The release scanner rejects Classic Pack resources, the optional JSKidPix
+reference bundle, and development-only WebKit linkage. The public build
+contains the native runtime only. `Scripts/verify_fidelity_assets.sh` verifies
+the ignored private test cache and is not a publication check.
 
 ## Xcode workflow
 
@@ -92,3 +97,6 @@ installing the pack in Application Support. The app downloads data only, never
 JavaScript or executable code. Read
 [`RIGHTS_AND_LICENSES.md`](../RIGHTS_AND_LICENSES.md) before changing resource
 membership or adding images, audio, fonts, or third-party code.
+
+See [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) before changing repository
+visibility, tagging a release, or hosting an unsigned IPA.

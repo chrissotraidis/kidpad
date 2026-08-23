@@ -36,6 +36,11 @@ and this residual uncertainty before downloading.
 `Resources/FidelityDev` is an ignored local cache for private tests. Its
 contents must never be committed or packaged.
 
+The README screenshot depicts KidPad after the user-installed Classic Pack was
+loaded. It is documentation, not an app-bundle resource. Because it visibly
+reproduces Classic Pack media, the same unresolved historical-rights boundary
+applies to that screenshot.
+
 ## JSKidPix reference
 
 The optional local copy under `Resources/JSKidPix` is used only by the opt-in
@@ -48,6 +53,11 @@ engine.
 `Resources/Licensed/ChiKareGo2.ttf` is bundled under Creative Commons
 Attribution. Its source, attribution, and hash are recorded in
 [`docs/THIRD_PARTY_FONTS.md`](docs/THIRD_PARTY_FONTS.md).
+
+## Project artwork
+
+The KidPad app icon is original project artwork distributed under Apache-2.0.
+Its path and SHA-256 digest are recorded in [`AssetLedger.json`](AssetLedger.json).
 
 ## Name and inspiration
 

@@ -68,11 +68,15 @@ struct KidPadApp: App {
 
     var body: some Scene {
         WindowGroup {
+            #if KIDPAD_FIDELITY_DEV
             if CommandLine.arguments.contains("--reference-web") {
                 WebKidPixView()
             } else {
                 KidPadRootView()
             }
+            #else
+            KidPadRootView()
+            #endif
         }
     }
 }

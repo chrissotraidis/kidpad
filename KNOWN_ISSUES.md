@@ -1,10 +1,33 @@
-# Known Issues
+# Known issues
 
-| ID | Severity | Reproduction | Expected | Actual | Logs/artifacts | Suspected cause | Next action | Status | Goal |
-|---|---|---|---|---|---|---|---|---|---|
-| KI-001 | medium | Run on a physical iPad with Apple Pencil | Pressure, tilt, hover, gesture, and palm-rejection paths verified | Version 1 drawing latency and pressure feel were accepted on an iPad Pro 12.9-inch (6th generation); tilt, hover, double-tap, squeeze, roll, and the full palm-rejection matrix were not all exercised | Physical Version 1 acceptance session; `artifacts/hardware/` reserved for remaining diagnostics | Hardware coverage is partial rather than unavailable | Execute the remaining Pencil API checklist without reopening the accepted drawing-latency baseline | partially-verified | G7 |
-| KI-002 | high | Seek public historical asset/trademark/license clearance | No unverified historical assets or unresolved naming rights at publication | Technical ReleasePublic profile passes with FidelityDev omitted; historical rights remain unresolved | `artifacts/logs/releasepublic-build-200.log`, `AssetLedger.json` | Asset rights and trademark clearance are unresolved | Obtain written permission/clearance or ship only a cleared replacement profile | open | G9 |
-| KI-003 | low | Capture audible audio output during sound actions | Recorded proof that downloaded WAVs are audible at runtime | Playback is verified by wiring, bounded player-pool tests, and source-mapping unit tests, but the Version 1 acceptance session did not capture isolated audible evidence | `artifacts/logs/native-full-suite-209-sound-pass.log`, `artifacts/logs/fidelity-assets-210.log` | No retained audio recording is available | Record audible confirmation on a physical device | open | G5/G8 |
-| KI-004 | info | Exercise Mixer 2 (Checkerboard) and Mixer 13 (Swirl/Pancake) sounds | Sound parity with pinned source behavior | Both are intentionally silent: Checkerboard has no sound in `Submenu.jumble`, and Swirl/Pancake map to unimplemented upstream sound paths — this matches the source, not a wiring gap | `ref/source-jskidpix/js/submenus/jumble.js`, `Sources/SoundPlayer.swift` | Source-defined silence, documented per objective requirement 5 | None required; recheck if upstream implements those sounds | closed-by-source-design | G5 |
-| KI-005 | info | Click File/Edit/Goodies then tap the canvas | Dropdown disappears | Verified on iPad Simulator 2026-08-21 | `artifacts/simulator/filemenu-open-219.png`, `artifacts/simulator/filemenu-dismissed-219.png`, `testClassicMenusDismissWhenClickingAway` | Previous overlay was clipped to the 28pt menu bar and the File button swallowed the dropdown hit target | Keep using the workspace overlay + dismiss scrim | closed | G2/G5 |
-| KI-006 | medium | Rotate the iPad between portrait and landscape with the splash on the canvas | Splash tiles keep native aspect; unused area is white letterbox | Before the fix, the 1920x1200 bitmap was stretched to fill the leftover view, stretching the example art | `artifacts/simulator/aspect-portrait-letterboxed-229.png`, `testCanvasKeepsDocumentAspectAcrossOrientations` | UIView filled the SwiftUI slot independently of document aspect | Keep letterboxing in `LetterboxedCanvasHost` | closed | G2/G5 |
+## Apple Pencil coverage
+
+Drawing latency and pressure-sensitive width were accepted on an iPad Pro
+12.9-inch (6th generation). Tilt, hover, double-tap, squeeze, roll, and the
+complete palm-rejection matrix have not all been exercised on compatible
+hardware.
+
+## Audio evidence
+
+Automated tests cover resource lookup, sound mapping, and the bounded playback
+pool. The Version 1 acceptance session did not retain an isolated physical-device
+audio recording. Checkerboard and Swirl/Pancake are intentionally silent to
+match the pinned JSKidPix behavior.
+
+## Behavioral parity
+
+Several complex Wacky Brush, Electric Mixer, texture, timing, and animation
+details are native approximations. See [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md)
+for the tool-by-tool boundary.
+
+## Classic Pack availability
+
+The first-run Classic Pack requires network access to the pinned GitHub source.
+If GitHub is unavailable, the app cannot complete first-run setup. Interrupted,
+incomplete, or digest-mismatched downloads are rejected and can be retried.
+
+## Rights and naming
+
+The public app bundle contains no Classic Pack, but historical media and the
+KID PIX trademark have not been independently cleared by this project. See
+[`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md).

@@ -1,0 +1,42 @@
+name: Public build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-public:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Check release scripts
+        shell: zsh {0}
+        run: zsh -n Scripts/*.sh
+
+      - name: Check repository boundary
+        shell: zsh {0}
+        run: Scripts/verify_public_repo.sh
+
+      - name: Check network boundary
+        shell: zsh {0}
+        run: Scripts/verify_no_network.sh .
+
+      - name: Build public profile
+        shell: zsh {0}
+        run: Scripts/build_public.sh

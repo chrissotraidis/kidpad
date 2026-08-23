@@ -1039,7 +1039,7 @@ struct WorkspaceView: View {
             SoundPlayer.submenuOptionClick()
         } label: {
             // The pinned source's makeIcon helper shows a complete 30×30 sample
-            // inside a 50×50 cell. Scaling the raw 2–8 pixel texture tile made
+            // inside a 50×50 cell. Scaling the raw 2 to 8 pixel texture tile made
             // partial fills look like two oversized blocks stuck together.
             Image(uiImage: document.pencilTexturePreview(texture, shape: selectedTool))
                 .resizable()

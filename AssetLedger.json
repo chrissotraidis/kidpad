@@ -26,6 +26,28 @@
       "notice": "docs/THIRD_PARTY_FONTS.md"
     },
     {
+      "id": "kidpad-app-icon",
+      "paths": [
+        "Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png"
+      ],
+      "source": "Original artwork created for KidPad",
+      "license": "Apache-2.0",
+      "status": "bundled-project-artwork",
+      "bundled": true,
+      "sha256": "a2903d18b262d9bb00b8454fdd54064a4752c3ba9c3b43d720125ad2bdffaa6f"
+    },
+    {
+      "id": "kidpad-version-1-readme-screenshot",
+      "paths": [
+        "docs/readme/kidpad-ipad-v1.png"
+      ],
+      "source": "Maintainer capture of KidPad Version 1 running on a physical iPad",
+      "license": "Project documentation capture; displayed Classic Pack media retains the rights uncertainty described in RIGHTS_AND_LICENSES.md",
+      "status": "documentation-only",
+      "bundled": false,
+      "sha256": "cc2af13093da7d59d9e569efb656222bb0af5d152938e8034406ca2b4c7e6708"
+    },
+    {
       "id": "jskidpix-local-reference-harness",
       "paths": [
         "Resources/JSKidPix"
