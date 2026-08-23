@@ -111,14 +111,15 @@ In practical terms: this is intended to be Kid Pix on iPad, but it is not an off
 | Build from source with Xcode | Available |
 | Run on iPad and Mac Catalyst | Available |
 | Create a local unsigned IPA | Available through `Scripts/package_public_ipa.sh` |
-| Download a hosted IPA | Not published yet |
+| Download the stable iPad IPA | [KidPad Version 1.0.0, unsigned](https://github.com/chrissotraidis/kidpad/releases/download/v1.0.0/KidPad-v1.0.0-unsigned.ipa) |
 | App Store or TestFlight | Not announced |
 
-Version 1 was accepted on an iPad Pro 12.9-inch (6th generation) after a clean AltStore installation. First-run Classic Pack setup, Apple Pencil drawing, pressure response, and the lower-latency brush pipeline were exercised on hardware. Tilt, hover, double-tap, squeeze, roll, and the complete palm-rejection matrix remain targeted checks rather than completed claims.
+Version 1 is the stable iPad release. It was accepted on an iPad Pro 12.9-inch (6th generation) after a clean AltStore installation. First-run Classic Pack setup, Apple Pencil drawing, pressure response, and the lower-latency brush pipeline were exercised on hardware. The Version 1 IPA is iPad-only. Native iPhone support is planned for Version 2.
 
-The source-publication and binary-release gates are intentionally separate. See
-the [`public release checklist`](docs/RELEASE_CHECKLIST.md) and
-[`Version 1 changelog`](CHANGELOG.md) for the exact remaining steps.
+Source publication, unsigned IPA distribution, and marketplace release are
+intentionally separate gates. See the
+[`public release checklist`](docs/RELEASE_CHECKLIST.md) and
+[`Version 1 changelog`](CHANGELOG.md) for the release record and remaining work.
 
 ## What works
 
@@ -160,15 +161,19 @@ See [`docs/BUILDING.md`](docs/BUILDING.md) for clean-machine steps, tests, signi
 Scripts/package_public_ipa.sh
 ```
 
-This creates `build/releases/KidPad-unsigned.ipa` and a SHA-256 checksum. The unsigned IPA must be signed for the destination device by Xcode, AltStore, or another signing service. It contains no Classic Pack and prompts for the optional download after installation.
+This creates `build/releases/KidPad-v1.0.0-unsigned.ipa` and a SHA-256 checksum. The unsigned IPA must be signed for the destination iPad by Xcode, AltStore, or another signing service. It contains no Classic Pack and prompts for the optional download after installation.
 
-KidPad does not currently publish a prebuilt IPA from this repository. That artifact can be added separately without changing the source or Classic Pack boundary.
+The same verified unsigned artifact is available from the [Version 1.0.0 GitHub Release](https://github.com/chrissotraidis/kidpad/releases/tag/v1.0.0).
 
 ## Frequently asked questions
 
 ### Is this actually Kid Pix on iPad?
 
 That is the goal and the intended experience. KidPad recreates the recognizable Kid Pix workspace, tools, artwork, and sounds as a native iPad app. It is unofficial and independently developed.
+
+### Does Version 1 work on iPhone?
+
+No. Version 1 is the stable iPad release and its IPA is marked iPad-only. Native iPhone support is planned for Version 2.
 
 ### How was KidPad made?
 
