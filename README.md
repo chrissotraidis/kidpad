@@ -43,13 +43,25 @@ The experience is deliberately recognizable. This is not a loosely inspired draw
 
 KidPad uses the pinned [`vikrum/kidpix@99c67f3`](https://github.com/vikrum/kidpix/tree/99c67f3427d229f7db60b03dcf19df4d8c2a8ecf) project as its behavior and asset reference.
 
+JSKidPix is itself a hand-built HTML and JavaScript reimplementation of Kid Pix,
+not a publication or translation of the original Macintosh source. Its public
+issue history documents a combination of controlled observation, comparison,
+targeted reverse engineering of the 1989 executable, explanations from Craig
+Hickman, and established open-source graphics algorithms. KidPad begins from
+that public reference and rebuilds the experience again for native Apple
+platforms.
+
 1. **The tools were studied.** KidPad follows the tool catalogs, menus, brush choices, sounds, and visible behavior exposed by that exact JSKidPix revision.
 2. **The drawing engine was rebuilt.** Pencil, shapes, Wacky Brush, Electric Mixer, Fill, Eraser, Alphabet, Rubber Stamps, Moving Van, Undo, documents, and input handling were implemented as native Swift code.
 3. **The interface was adapted for iPad.** The classic workspace was preserved while adding Apple Pencil pressure, responsive layouts, left-handed mode, touch-sized controls, and two-finger canvas navigation.
 4. **The classic presentation was restored.** After installation, the app can use the familiar PNG and WAV resources from the pinned JSKidPix Classic Pack.
 5. **The public build was separated from the pack.** Release builds contain the native app and a separately licensed font, while the optional Classic Pack is obtained only after the user chooses to download it.
 
-The result is a native recreation, not a mechanical conversion of JavaScript and not an emulated copy of the old application. Some complex effects remain native approximations; [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md) records those differences.
+The result is a native recreation, not a mechanical conversion of JavaScript and not an emulated copy of the old application. KidPad Version 1 did not use the original Kid Pix source code or translate its compiled 68K executable. Some complex effects therefore remain native approximations; [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md) records those differences.
+
+The complete development lineage, archival investigation, AI-assisted
+engineering process, reused-media boundary, and remaining unknowns are recorded
+in [`docs/HISTORICAL_PROVENANCE.md`](docs/HISTORICAL_PROVENANCE.md).
 
 ## How the Classic Pack works
 
@@ -154,6 +166,31 @@ KidPad does not currently publish a prebuilt IPA from this repository. That arti
 
 That is the goal and the intended experience. KidPad recreates the recognizable Kid Pix workspace, tools, artwork, and sounds as a native iPad app. It is unofficial and independently developed.
 
+### How was KidPad made?
+
+KidPad's application, canvas, documents, touch input, Apple Pencil support, and
+audio playback were implemented as native Swift code using SwiftUI, UIKit, and
+Core Graphics. The pinned JSKidPix revision supplied the behavior catalog,
+option ordering, visual reference, sound mapping, and optional Classic Pack.
+The shipping app does not run JavaScript or emulate a Macintosh.
+
+Development used AI-assisted software engineering for implementation, testing,
+research, debugging, and documentation. AI did not supply or recover original
+Kid Pix source code. Project direction, physical-device testing, and release
+acceptance were performed by the maintainer.
+
+### What is KidPad derived from?
+
+- Native application code: new KidPad Swift code.
+- Tool behavior and presentation: studied from pinned JSKidPix.
+- Classic artwork and sounds: downloaded from that pinned JSKidPix revision
+  only after user consent.
+- Original Kid Pix source code: not obtained or used.
+- Original Macintosh executable: not bundled, translated, or executed.
+
+See [`docs/HISTORICAL_PROVENANCE.md`](docs/HISTORICAL_PROVENANCE.md) for the
+source-backed history and explicit unknowns.
+
 ### Does it use the classic Kid Pix artwork and sounds?
 
 Yes. After the user agrees, KidPad downloads the pinned Classic Pack directly from JSKidPix and verifies it before use. Those files are not stored in this repository or bundled in the IPA.
@@ -164,7 +201,13 @@ No. The product canvas and tools are native Swift code. An optional local web re
 
 ### Is Kid Pix definitely in the public domain?
 
-The JSKidPix project states that the original 1989 Kid Pix 1.0 was released into the public domain, and it publishes its repository under GPL-3.0. KidPad relies on that upstream position, but this project has not independently established the status of every underlying asset or trademark.
+Not established by this project. JSKidPix states that the original 1989 Kid Pix
+1.0 was released into the public domain and publishes its repository under
+GPL-3.0. The preserved 1989 application identifies itself as copyrighted and
+permits that version to be distributed for free, but it does not publish source
+code or expressly establish the status of every later image, sound, logo, or
+trademark. KidPad reports the upstream claim and the contrary uncertainty
+rather than presenting independent legal clearance.
 
 ### Why download the Classic Pack after installation?
 
@@ -192,6 +235,7 @@ Behavior status and remaining validation gaps are tracked in [`docs/PARITY_MATRI
 - [`Sources/`](Sources/) contains the native app, canvas, input, documents, audio, and Classic Pack installer.
 - [`Tests/`](Tests/) and [`UITests/`](UITests/) contain automated coverage.
 - [`docs/BUILDING.md`](docs/BUILDING.md) is the reproducible build and validation guide.
+- [`docs/HISTORICAL_PROVENANCE.md`](docs/HISTORICAL_PROVENANCE.md) records the original-to-JSKidPix-to-KidPad lineage, archival evidence, and known unknowns.
 - [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md) records tool-by-tool behavior status.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) explains the contribution workflow.
 - [`SECURITY.md`](SECURITY.md) explains private vulnerability reporting.
