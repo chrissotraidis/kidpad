@@ -10,6 +10,9 @@ artifacts/*
 !artifacts/reports/
 !artifacts/reports/**
 .venv/
+design-qa.md
+docs/VISUAL_DESIGN_ITERATION_PLAN.md
+docs/reference/
 
 # Historical / third-party reference material that must not ship automatically
 ref/*

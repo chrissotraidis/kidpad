@@ -82,6 +82,8 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
     var pressureEnabled = true
     private var lastPoint: CGPoint?
     private var previewImage: UIImage?
+    private var predictedStrokePoints: [CGPoint] = []
+    private var predictedStrokePressure: CGFloat = 1
     private(set) var lastInput: NormalizedInput?
     private var hoverPoint: CGPoint?
     private var didPlayProgressSound = false
@@ -141,6 +143,19 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
         UIColor.white.setFill()
         UIRectFill(bounds)
         (previewImage ?? document.image).draw(in: bounds)
+        if predictedStrokePoints.count > 1, activeTool == .pencil, let context = UIGraphicsGetCurrentContext() {
+            let displayScale = bounds.width / max(document.size.width, 1)
+            context.saveGState()
+            context.setStrokeColor(inkColor.withAlphaComponent(0.45).cgColor)
+            context.setLineWidth(max(1, inkWidth * predictedStrokePressure * displayScale))
+            context.setLineCap(.round)
+            context.move(to: displayPoint(predictedStrokePoints[0]))
+            for point in predictedStrokePoints.dropFirst() {
+                context.addLine(to: displayPoint(point))
+            }
+            context.strokePath()
+            context.restoreGState()
+        }
         if let hoverPoint, activeTool != .stamp && activeTool != .alphabet {
             let context = UIGraphicsGetCurrentContext()
             context?.setStrokeColor(UIColor.systemBlue.withAlphaComponent(0.65).cgColor)
@@ -151,6 +166,7 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
 
     func refreshFromDocument() {
         previewImage = nil
+        predictedStrokePoints = []
         hoverPoint = nil
         lastPoint = nil
         setNeedsDisplay()
@@ -179,9 +195,17 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
         )
     }
 
+    private func displayPoint(_ point: CGPoint) -> CGPoint {
+        CGPoint(
+            x: point.x / max(document.size.width, 1) * bounds.width,
+            y: point.y / max(document.size.height, 1) * bounds.height
+        )
+    }
+
     static func mappedPressure(force: CGFloat, maximumPossibleForce: CGFloat, type: UITouch.TouchType, pressureEnabled: Bool) -> CGFloat {
         guard type == .pencil, pressureEnabled else { return 1.0 }
-        return max(0.25, force / max(0.01, maximumPossibleForce))
+        let normalized = min(max(force / max(0.01, maximumPossibleForce), 0), 1)
+        return max(0.05, pow(normalized, 1.4))
     }
     private func pressure(_ touch: UITouch) -> CGFloat { Self.mappedPressure(force: touch.force, maximumPossibleForce: touch.maximumPossibleForce, type: touch.type, pressureEnabled: pressureEnabled) }
     private func record(_ touch: UITouch, phase: NormalizedInput.Phase) {
@@ -193,13 +217,14 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
     private var isShape: Bool { [.line, .rectangle, .oval].contains(activeTool) }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }; synchronizeDocumentOptions(); record(touch, phase: .began); didPlayProgressSound = false; Task { @MainActor in SoundPlayer.actionStarted(for: activeTool) }; document.beginTransaction(); let point = logicalPoint(touch.location(in: self)); lastPoint = point
+        guard let touch = touches.first else { return }; predictedStrokePoints = []; synchronizeDocumentOptions(); record(touch, phase: .began); didPlayProgressSound = false; Task { @MainActor in SoundPlayer.actionStarted(for: activeTool) }; document.beginTransaction(); let point = logicalPoint(touch.location(in: self)); lastPoint = point
         if [.fill, .mixer, .clear].contains(activeTool) { document.apply(tool: activeTool, from: point, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch)); document.commit(); lastPoint = nil; setNeedsDisplay(); if activeTool == .clear { UIView.animate(withDuration: 0.12, animations: { self.alpha = 0.18 }) { _ in UIView.animate(withDuration: 0.24) { self.alpha = 1 } } } }
         else if activeTool == .brush { document.apply(tool: activeTool, from: point, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch)); setNeedsDisplay() }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first, let lastPoint else { return }
+        predictedStrokePoints = []
         record(touch, phase: .moved)
         if activeTool == .brush {
             Task { @MainActor in SoundPlayer.actionProgressed(for: activeTool) }
@@ -208,24 +233,43 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
             Task { @MainActor in SoundPlayer.actionProgressed(for: activeTool) }
         }
         let samples = event?.coalescedTouches(for: touch) ?? [touch]
-        for sample in samples {
-            let point = logicalPoint(sample.location(in: self))
-            if activeTool == .pencil || activeTool == .eraser || activeTool == .brush { document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth, pressure: pressure(sample)); self.lastPoint = point }
-            else if isShape { previewImage = document.previewShape(activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth) }
-            else if activeTool == .stamp { previewImage = document.previewStamp(at: point) }
-            else if activeTool == .alphabet { previewImage = document.previewAlphabet(at: point, color: inkColor) }
-            else if activeTool == .truck { previewImage = document.previewTruck(from: lastPoint, to: point) }
+        if activeTool == .pencil {
+            let strokeSamples = samples.map {
+                PressureStrokeSample(point: logicalPoint($0.location(in: self)), pressure: pressure($0))
+            }
+            document.applyPencilStroke(from: lastPoint, samples: strokeSamples, color: inkColor, width: inkWidth)
+            self.lastPoint = strokeSamples.last?.point ?? lastPoint
+        } else if activeTool == .brush {
+            // JSKidPix reacts to delivered pointer events, not every hidden
+            // UIKit sample. One brush update per event also avoids repeatedly
+            // copying the full canvas before the next frame can be displayed.
+            let point = logicalPoint(touch.location(in: self))
+            document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch))
+            self.lastPoint = point
+        } else {
+            for sample in samples {
+                let point = logicalPoint(sample.location(in: self))
+                if activeTool == .eraser {
+                    document.apply(tool: activeTool, from: self.lastPoint ?? lastPoint, to: point, color: inkColor, width: inkWidth, pressure: pressure(sample))
+                    self.lastPoint = point
+                } else if isShape { previewImage = document.previewShape(activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth) }
+                else if activeTool == .stamp { previewImage = document.previewStamp(at: point) }
+                else if activeTool == .alphabet { previewImage = document.previewAlphabet(at: point, color: inkColor) }
+                else if activeTool == .truck { previewImage = document.previewTruck(from: lastPoint, to: point) }
+            }
         }
         if activeTool == .pencil, let predicted = event?.predictedTouches(for: touch), !predicted.isEmpty, let actualPoint = self.lastPoint {
             let predictedPoints = predicted.map { logicalPoint($0.location(in: self)) }
-            previewImage = document.previewStroke(from: actualPoint, through: predictedPoints, color: inkColor, width: inkWidth, pressure: pressure(touch))
-            accessibilityValue = "Pencil predicted preview (predictedPoints.count) points"
+            predictedStrokePoints = [actualPoint] + predictedPoints
+            predictedStrokePressure = pressure(predicted.last ?? touch)
+            accessibilityValue = "Pencil predicted preview \(predictedPoints.count) points"
         }
         setNeedsDisplay()
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first, let lastPoint else { return }; record(touch, phase: .ended); Task { @MainActor in SoundPlayer.actionEnded(for: activeTool); SoundPlayer.actionReleased(for: activeTool) }; let point = logicalPoint(touch.location(in: self))
+        predictedStrokePoints = []
         if isShape { document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth); document.commit(); previewImage = nil; setNeedsDisplay() }
         else if activeTool == .pencil || activeTool == .eraser || activeTool == .brush {
             document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch))
@@ -236,7 +280,7 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
         else if activeTool == .truck { document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch)); document.commit(); previewImage = nil; setNeedsDisplay() }
         self.lastPoint = nil; didPlayProgressSound = false
     }
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) { if let touch = touches.first { record(touch, phase: .cancelled) }; document.cancelTransaction(); lastPoint = nil; previewImage = nil; didPlayProgressSound = false; setNeedsDisplay() }
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) { if let touch = touches.first { record(touch, phase: .cancelled) }; document.cancelTransaction(); lastPoint = nil; previewImage = nil; predictedStrokePoints = []; didPlayProgressSound = false; setNeedsDisplay() }
 
     @objc private func handleHover(_ gesture: UIHoverGestureRecognizer) {
         let point = gesture.location(in: self)

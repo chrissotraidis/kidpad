@@ -331,50 +331,86 @@ struct ClassicAssetInstallView: View {
 
     var body: some View {
         ZStack {
-            Color(white: 0.82).ignoresSafeArea()
-            VStack(spacing: 22) {
-                Text("KidPad")
-                    .font(.system(size: 42, weight: .black, design: .rounded))
-                Text("Download the classic artwork and sounds from the pinned JSKidPix project to finish setting up KidPad.")
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 520)
-                Text("About 2 MB · GPL-3.0 · One-time download")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-
-                switch manager.phase {
-                case .awaitingConsent:
-                    downloadButton
-                case .downloading:
-                    ProgressView(value: manager.progress) {
-                        Text("Installing Classic Pack…")
+            Color(red: 0.69, green: 0.75, blue: 0.91).ignoresSafeArea()
+            VStack(spacing: 0) {
+                HStack(spacing: 6) {
+                    ForEach([Color.red, .yellow, .green, .cyan, .blue, .purple], id: \.self) { color in
+                        color.frame(maxWidth: .infinity)
                     }
-                    .frame(maxWidth: 360)
-                    .accessibilityIdentifier("classicPack.progress")
-                case .failed(let message):
-                    Text(message)
-                        .foregroundStyle(.red)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 520)
-                    downloadButton
-                case .ready:
-                    EmptyView()
                 }
+                .frame(height: 12)
+                .overlay(Rectangle().stroke(.black, lineWidth: 2))
 
-                HStack(spacing: 16) {
-                    Link("View source", destination: ClassicAssetCatalog.sourceRepository)
-                    Link("View GPL-3.0 license", destination: ClassicAssetCatalog.sourceLicense)
+                VStack(spacing: 18) {
+                    Text("KIDPAD SETUP")
+                        .font(.custom("ChiKareGo2", fixedSize: 44))
+                        .foregroundStyle(.black)
+
+                    Text("One quick download, then you can draw.")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .multilineTextAlignment(.center)
+
+                    VStack(spacing: 12) {
+                        Text("KidPad will download the classic artwork and sounds from the pinned JSKidPix project.")
+                            .font(.system(size: 17, weight: .medium, design: .rounded))
+                            .lineSpacing(4)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 520)
+                        Text("About 2 MB  •  One time  •  No executable code")
+                            .font(.system(size: 14, weight: .semibold, design: .rounded))
+                            .foregroundStyle(Color(white: 0.28))
+                    }
+
+                    switch manager.phase {
+                    case .awaitingConsent:
+                        downloadButton
+                    case .downloading:
+                        VStack(spacing: 8) {
+                            ProgressView(value: manager.progress)
+                                .tint(.black)
+                            Text("Installing Classic Pack…  \(Int(manager.progress * 100))%")
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        }
+                        .frame(maxWidth: 380)
+                        .accessibilityIdentifier("classicPack.progress")
+                    case .failed(let message):
+                        Text(message)
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                            .foregroundStyle(Color(red: 0.72, green: 0.05, blue: 0.03))
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 520)
+                        downloadButton
+                    case .ready:
+                        EmptyView()
+                    }
+
+                    HStack(spacing: 24) {
+                        Link("VIEW SOURCE", destination: ClassicAssetCatalog.sourceRepository)
+                        Link("GPL-3.0 LICENSE", destination: ClassicAssetCatalog.sourceLicense)
+                    }
+                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                    .foregroundStyle(.blue)
+                    .underline()
                 }
-                .font(.footnote)
+                .padding(.horizontal, 38)
+                .padding(.vertical, 30)
             }
-            .padding(36)
+            .background(Color(white: 0.91))
+            .overlay(Rectangle().stroke(.black, lineWidth: 3))
+            .frame(maxWidth: 680)
+            .padding(32)
         }
+        .preferredColorScheme(.light)
     }
 
     private var downloadButton: some View {
         Button("Download Classic Pack") { manager.install() }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .font(.system(size: 18, weight: .bold, design: .rounded))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
+            .background(Color(red: 0.06, green: 0.22, blue: 0.66))
+            .overlay(Rectangle().stroke(.black, lineWidth: 3))
             .accessibilityIdentifier("classicPack.download")
     }
 }

@@ -75,8 +75,12 @@ A physical-device build requires an Apple Developer team, provisioning, and
 signing configured in Xcode. Select a connected iPad, choose the project team,
 and build `ReleasePublic`.
 
-Hardware validation is pending for Apple Pencil pressure, altitude, azimuth,
-hover, double-tap, squeeze, roll, and palm rejection. Record results in
+The Version 1 candidate was installed cleanly on an iPad Pro 12.9-inch (6th
+generation) through AltStore on 2026-08-23. First-run Classic Pack setup,
+Apple Pencil drawing, pressure response, and the lower-latency brush path were
+accepted by hands-on testing. Altitude, azimuth, hover, double-tap, squeeze,
+roll, and the complete palm-rejection matrix remain targeted checks. Record
+those results in
 [`HARDWARE_VALIDATION_REQUIRED.md`](../HARDWARE_VALIDATION_REQUIRED.md).
 
 ## Asset and network boundaries

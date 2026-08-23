@@ -744,9 +744,34 @@ final class CanvasCoreTests: XCTestCase {
     }
 
     func testPressurePolicySupportsNativeAndClassicModes() {
-        XCTAssertEqual(RasterCanvasView.mappedPressure(force: 0.25, maximumPossibleForce: 1, type: .pencil, pressureEnabled: true), 0.25, accuracy: 0.001)
+        let feather = RasterCanvasView.mappedPressure(force: 0, maximumPossibleForce: 1, type: .pencil, pressureEnabled: true)
+        let light = RasterCanvasView.mappedPressure(force: 0.25, maximumPossibleForce: 1, type: .pencil, pressureEnabled: true)
+        let medium = RasterCanvasView.mappedPressure(force: 0.5, maximumPossibleForce: 1, type: .pencil, pressureEnabled: true)
+        XCTAssertEqual(feather, 0.05, accuracy: 0.001)
+        XCTAssertEqual(light, pow(0.25, 1.4), accuracy: 0.001)
+        XCTAssertEqual(medium, pow(0.5, 1.4), accuracy: 0.001)
+        XCTAssertLessThan(feather, light)
+        XCTAssertLessThan(light, medium)
+        XCTAssertLessThan(medium, 1)
+        XCTAssertEqual(RasterCanvasView.mappedPressure(force: 2, maximumPossibleForce: 1, type: .pencil, pressureEnabled: true), 1.0, accuracy: 0.001)
         XCTAssertEqual(RasterCanvasView.mappedPressure(force: 0.25, maximumPossibleForce: 1, type: .pencil, pressureEnabled: false), 1.0, accuracy: 0.001)
         XCTAssertEqual(RasterCanvasView.mappedPressure(force: 0.25, maximumPossibleForce: 1, type: .direct, pressureEnabled: true), 1.0, accuracy: 0.001)
+    }
+
+    func testCoalescedPencilSamplesRenderAsOneContinuousPressureStroke() {
+        let document = RasterDocument(size: CGSize(width: 180, height: 120))
+        let before = document.pngData()
+        document.applyPencilStroke(
+            from: CGPoint(x: 20, y: 60),
+            samples: [
+                PressureStrokeSample(point: CGPoint(x: 60, y: 60), pressure: 0.08),
+                PressureStrokeSample(point: CGPoint(x: 110, y: 60), pressure: 0.45),
+                PressureStrokeSample(point: CGPoint(x: 160, y: 60), pressure: 1.0),
+            ],
+            color: .black,
+            width: 24
+        )
+        XCTAssertNotEqual(document.pngData(), before)
     }
 
     func testApplePencilPressureChangesRenderedStrokeWidth() {

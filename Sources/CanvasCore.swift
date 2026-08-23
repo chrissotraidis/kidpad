@@ -62,6 +62,11 @@ struct NormalizedInput {
     let kind: UITouch.TouchType
 }
 
+struct PressureStrokeSample: Equatable {
+    let point: CGPoint
+    let pressure: CGFloat
+}
+
 protocol DrawingInputSource {
     func events() -> AsyncStream<NormalizedInput>
 }
@@ -315,6 +320,40 @@ final class RasterDocument {
         case .stamp: stampReference(at: end)
         case .truck: moveRegion(from: start, to: end)
         case .clear: clear()
+        }
+    }
+
+    /// Draw one UIKit delivery of coalesced Pencil input with a single bitmap
+    /// copy. Rendering each sample separately made one touch event copy the
+    /// entire 1920x1200 canvas several times before the next frame appeared.
+    func applyPencilStroke(from start: CGPoint, samples: [PressureStrokeSample], color: UIColor, width: CGFloat) {
+        guard !samples.isEmpty else { return }
+        image = Self.render(size: size, base: image) { context in
+            let strokeColor = pencilTexture == .solid
+                ? color
+                : UIColor(patternImage: texturePatternImage(pencilTexture, color: color))
+            context.setStrokeColor(strokeColor.cgColor)
+            context.setFillColor(strokeColor.cgColor)
+            context.setLineCap(.round)
+
+            var previous = start
+            for sample in samples {
+                let lineWidth = max(1, width * sample.pressure)
+                context.setLineWidth(lineWidth)
+                if previous == sample.point {
+                    context.fillEllipse(in: CGRect(
+                        x: sample.point.x - lineWidth / 2,
+                        y: sample.point.y - lineWidth / 2,
+                        width: lineWidth,
+                        height: lineWidth
+                    ))
+                } else {
+                    context.move(to: previous)
+                    context.addLine(to: sample.point)
+                    context.strokePath()
+                }
+                previous = sample.point
+            }
         }
     }
 
