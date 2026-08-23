@@ -4,7 +4,7 @@ All notable public releases of KidPad are documented here.
 
 ## 1.0.0 - 2026-08-23
 
-KidPad Version 1 is the first public source release candidate.
+KidPad Version 1 is the first stable public iPad release.
 
 ### Highlights
 
@@ -13,6 +13,7 @@ KidPad Version 1 is the first public source release candidate.
 - Pencil, shapes, Wacky Brush, Electric Mixer, Fill, Eraser, Alphabet, Rubber Stamps, Moving Van, TNT, Undo, and Redo.
 - Autosave, recovery, recent drawings, PNG export, responsive layouts, and left-handed mode.
 - iPadOS 17 or later support plus Mac Catalyst support.
+- The distributed Version 1 IPA is iPad-only. Native iPhone support is planned for Version 2.
 - User-approved Classic Pack download from a pinned JSKidPix revision with a fixed catalog and SHA-256 verification.
 - Public build and unsigned IPA workflows that keep the Classic Pack and development reference harness outside the app bundle.
 
@@ -24,6 +25,5 @@ KidPad Version 1 is the first public source release candidate.
 
 ### Known boundaries
 
-- The unsigned IPA is not yet hosted as a GitHub Release asset.
 - Tilt, hover, double-tap, squeeze, roll, the full palm-rejection matrix, and retained audible-output evidence remain incomplete checks.
 - Historical artwork, sounds, naming, and trademark rights are not independently cleared by this project. See [`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md).

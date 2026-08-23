@@ -29,11 +29,13 @@ must pass before sharing a Simulator app or creating a release artifact.
 Scripts/package_public_ipa.sh
 ```
 
-This produces `build/releases/KidPad-unsigned.ipa` and a `.sha256` checksum from
-a generic iOS `ReleasePublic` build. It runs the same asset scanner and verifies
-the new ZIP before replacing any previous artifact. A sideloading tool must
-re-sign it for the user's device. The Classic Pack is not inside the IPA; the
-installed app asks before downloading it from the pinned upstream revision.
+This produces `build/releases/KidPad-v1.0.0-unsigned.ipa` and a `.sha256`
+checksum from a generic iOS `ReleasePublic` build. The package script verifies
+the app version and confirms that Version 1 advertises only the iPad device
+family. It runs the same asset scanner and verifies the new ZIP before replacing
+any previous artifact. A sideloading tool must re-sign it for the user's iPad.
+The Classic Pack is not inside the IPA; the installed app asks before
+downloading it from the pinned upstream revision.
 
 For a development build with code signing disabled:
 
