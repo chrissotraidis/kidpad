@@ -11,6 +11,7 @@ xcuserdata/
 artifacts/
 .venv/
 design-qa.md
+design-qa-evidence/
 docs/VISUAL_DESIGN_ITERATION_PLAN.md
 docs/reference/
 AGENT_STATE.md

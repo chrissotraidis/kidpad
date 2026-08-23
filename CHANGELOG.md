@@ -2,6 +2,24 @@
 
 All notable public releases of KidPad are documented here.
 
+## 2.0.0 - 2026-08-23
+
+KidPad Version 2 adds native iPhone support while preserving the accepted iPad experience.
+
+### Highlights
+
+- One universal iOS IPA for iPhone and iPad.
+- A compact, paged iPhone toolbar that keeps the familiar Kid Pix controls at the top.
+- A collapsible File, Edit, and Goodies menu that reclaims drawing space in portrait and landscape.
+- A full-height iPhone canvas with two-finger zoom and pan that does not leave accidental marks.
+- Touch targets and option shelves sized for smaller displays without changing the iPad layout.
+
+### Validation
+
+- The final iPhone layout was accepted by hands-on testing on a physical iPhone 14 in portrait and landscape.
+- Focused canvas-navigation, phone-layout, and menu-collapse tests pass.
+- The public asset scan and universal unsigned IPA packaging pass.
+
 ## 1.0.0 - 2026-08-23
 
 KidPad Version 1 is the first stable public iPad release.

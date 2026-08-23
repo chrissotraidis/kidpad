@@ -1,12 +1,13 @@
 # KidPad
 
 <p align="center">
-  <strong>Kid Pix, native on iPad.</strong><br>
+  <strong>Kid Pix, native on iPhone and iPad.</strong><br>
   An unofficial recreation of Kid Pix 1.0, rebuilt in Swift for Apple Pencil, touch, sound, and modern documents.
 </p>
 
 <p align="center">
-  <img alt="Version 1" src="https://img.shields.io/badge/version-1.0-blue">
+  <img alt="Version 2" src="https://img.shields.io/badge/version-2.0-blue">
+  <img alt="iOS 17 or later" src="https://img.shields.io/badge/iOS-17%2B-000000?logo=apple">
   <img alt="iPadOS 17 or later" src="https://img.shields.io/badge/iPadOS-17%2B-000000?logo=apple">
   <img alt="macOS via Mac Catalyst" src="https://img.shields.io/badge/macOS-Mac%20Catalyst-000000?logo=apple">
   <img alt="Swift 6" src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white">
@@ -16,17 +17,17 @@
 
 ![KidPad Version 1 running on a physical iPad](docs/readme/kidpad-ipad-v1.png)
 
-KidPad is a native recreation of the classic Kid Pix experience for iPad and Mac. It aims to look, sound, and behave like Kid Pix, using the familiar artwork, sounds, tools, menus, stamps, brushes, and playful interactions available through the pinned [JSKidPix](https://github.com/vikrum/kidpix) project.
+KidPad is a native recreation of the classic Kid Pix experience for iPhone, iPad, and Mac. It aims to look, sound, and behave like Kid Pix, using the familiar artwork, sounds, tools, menus, stamps, brushes, and playful interactions available through the pinned [JSKidPix](https://github.com/vikrum/kidpix) project.
 
-The experience is deliberately recognizable. This is not a loosely inspired drawing app with a retro skin. KidPad's purpose is to make Kid Pix feel at home on a modern iPad.
+The experience is deliberately recognizable. This is not a loosely inspired drawing app with a retro skin. KidPad's purpose is to make Kid Pix feel at home on modern Apple devices.
 
-> **In one sentence:** KidPad is Kid Pix for iPad, recreated natively and released as an independent, unofficial project.
+> **In one sentence:** KidPad is Kid Pix for iPhone and iPad, recreated natively and released as an independent, unofficial project.
 
 ## What KidPad is
 
 - A new native Swift implementation of the Kid Pix drawing experience.
 - A Core Graphics canvas with SwiftUI and UIKit controls, not a browser canvas.
-- An iPad-first app with Apple Pencil pressure, touch input, two-finger zoom and pan, autosave, recent drawings, and PNG export.
+- An iPhone and iPad app with touch input, Apple Pencil pressure on iPad, two-finger zoom and pan, autosave, recent drawings, and PNG export.
 - A recreation that uses the classic artwork and sounds downloaded from a pinned JSKidPix revision after the user approves the download.
 - A project that also runs on macOS through Mac Catalyst.
 
@@ -53,7 +54,7 @@ platforms.
 
 1. **The tools were studied.** KidPad follows the tool catalogs, menus, brush choices, sounds, and visible behavior exposed by that exact JSKidPix revision.
 2. **The drawing engine was rebuilt.** Pencil, shapes, Wacky Brush, Electric Mixer, Fill, Eraser, Alphabet, Rubber Stamps, Moving Van, Undo, documents, and input handling were implemented as native Swift code.
-3. **The interface was adapted for iPad.** The classic workspace was preserved while adding Apple Pencil pressure, responsive layouts, left-handed mode, touch-sized controls, and two-finger canvas navigation.
+3. **The interface was adapted for iPhone and iPad.** iPad keeps the full classic workspace, while iPhone uses compact paged controls, a collapsible menu bar, a full-height canvas, and two-finger navigation without drawing. Both layouts retain left-handed mode and touch-sized controls; iPad also supports Apple Pencil pressure.
 4. **The classic presentation was restored.** After installation, the app can use the familiar PNG and WAV resources from the pinned JSKidPix Classic Pack.
 5. **The public build was separated from the pack.** Release builds contain the native app and a separately licensed font, while the optional Classic Pack is obtained only after the user chooses to download it.
 
@@ -102,46 +103,46 @@ That structure makes the source of every downloaded file explicit, but it does n
 
 [Software MacKiev identifies KID PIX as its registered trademark](https://www.natura.kidpix.com/techsupport/winkidpix/support.html?ext=yes). KidPad uses the words “Kid Pix” to identify the experience being recreated, but KidPad is a separate product name and this project is not affiliated with, endorsed by, sponsored by, or licensed by Software MacKiev or any other Kid Pix rights holder.
 
-In practical terms: this is intended to be Kid Pix on iPad, but it is not an official Kid Pix release.
+In practical terms: this is intended to be Kid Pix on iPhone and iPad, but it is not an official Kid Pix release.
 
-## Version 1 status
+## Version 2 status
 
 | Distribution path | Status |
 | --- | --- |
 | Build from source with Xcode | Available |
-| Run on iPad and Mac Catalyst | Available |
+| Run on iPhone, iPad, and Mac Catalyst | Available |
 | Create a local unsigned IPA | Available through `Scripts/package_public_ipa.sh` |
-| Download the stable iPad IPA | [KidPad Version 1.0.0, unsigned](https://github.com/chrissotraidis/kidpad/releases/download/v1.0.0/KidPad-v1.0.0-unsigned.ipa) |
+| Download the universal iPhone and iPad IPA | [KidPad Version 2.0.0, unsigned](https://github.com/chrissotraidis/kidpad/releases/download/v2.0.0/KidPad-v2.0.0-unsigned.ipa) |
 | App Store or TestFlight | Not announced |
 
-Version 1 is the stable iPad release. It was accepted on an iPad Pro 12.9-inch (6th generation) after a clean AltStore installation. First-run Classic Pack setup, Apple Pencil drawing, pressure response, and the lower-latency brush pipeline were exercised on hardware. The Version 1 IPA is iPad-only. Native iPhone support is planned for Version 2.
+Version 2 adds a dedicated iPhone workspace without changing the accepted iPad layout. The iPhone layout was accepted on physical hardware in portrait and landscape, including its compact toolbar, collapsible File/Edit/Goodies menu, full-height canvas, and two-finger zoom and pan. Version 1's iPad hardware acceptance remains the baseline for Apple Pencil drawing and pressure response. The Version 2 IPA supports both iPhone and iPad.
 
 Source publication, unsigned IPA distribution, and marketplace release are
 intentionally separate gates. See the
 [`public release checklist`](docs/RELEASE_CHECKLIST.md) and
-[`Version 1 changelog`](CHANGELOG.md) for the release record and remaining work.
+[`changelog`](CHANGELOG.md) for the release record and remaining work.
 
 ## What works
 
 | Area | Current result |
 | --- | --- |
-| Canvas | Native 1920 x 1200 raster document with an 8:5 letterboxed presentation |
+| Canvas | Native 1920 x 1200 raster document with platform-adaptive presentation and two-finger navigation |
 | Drawing | Pencil, line, rectangle, oval, Wacky Brush, fill, eraser, Undo, and Redo |
 | Apple Pencil | Coalesced input, predicted-stroke feedback, and pressure-sensitive width |
 | Creative tools | Electric Mixer, TNT, Alphabet, Rubber Stamps, and Moving Van |
 | Workspace | File, Edit, and Goodies menus with click-away dismissal |
-| Layout | Portrait, landscape, compact-width, and left-handed toolbar layouts |
+| Layout | Full iPad workspace plus compact, collapsible iPhone layouts in portrait and landscape |
 | Documents | Autosave, backup recovery, thumbnails, Save, and PNG export |
 | Audio | Goodies mute control and bounded sound playback |
-| Platforms | iPadOS 17 or later and macOS through Mac Catalyst |
+| Platforms | iOS 17 or later, iPadOS 17 or later, and macOS through Mac Catalyst |
 
 ## Build and run
 
 Requirements:
 
 - macOS with Xcode
-- an iPad Simulator runtime, or an iPad with your own signing setup
-- iPadOS 17 or later for the iPad target
+- an iPhone or iPad Simulator runtime, or a physical device with your own signing setup
+- iOS or iPadOS 17 or later
 
 ```bash
 git clone https://github.com/chrissotraidis/kidpad.git
@@ -149,7 +150,7 @@ cd kidpad
 Scripts/build_public.sh
 ```
 
-The script builds `ReleasePublic` in isolated derived data and scans the resulting app bundle for excluded research assets. To run from Xcode, open `KidPad.xcodeproj`, select the `KidPad` scheme, choose an iPad Simulator or connected iPad, and press Run.
+The script builds `ReleasePublic` in isolated derived data and scans the resulting app bundle for excluded research assets. To run from Xcode, open `KidPad.xcodeproj`, select the `KidPad` scheme, choose an iPhone or iPad Simulator or connected device, and press Run.
 
 For Mac, select **My Mac (Mac Catalyst)** and build `ReleasePublic`. A raw iOS `.app` cannot be copied into `/Applications`; Mac Catalyst produces the correct macOS executable format.
 
@@ -161,19 +162,19 @@ See [`docs/BUILDING.md`](docs/BUILDING.md) for clean-machine steps, tests, signi
 Scripts/package_public_ipa.sh
 ```
 
-This creates `build/releases/KidPad-v1.0.0-unsigned.ipa` and a SHA-256 checksum. The unsigned IPA must be signed for the destination iPad by Xcode, AltStore, or another signing service. It contains no Classic Pack and prompts for the optional download after installation.
+This creates `build/releases/KidPad-v2.0.0-unsigned.ipa` and a SHA-256 checksum. The unsigned universal IPA must be signed for the destination iPhone or iPad by Xcode, AltStore, or another signing service. It contains no Classic Pack and prompts for the optional download after installation.
 
-The same verified unsigned artifact is available from the [Version 1.0.0 GitHub Release](https://github.com/chrissotraidis/kidpad/releases/tag/v1.0.0).
+The same verified unsigned artifact is available from the [Version 2.0.0 GitHub Release](https://github.com/chrissotraidis/kidpad/releases/tag/v2.0.0).
 
 ## Frequently asked questions
 
 ### Is this actually Kid Pix on iPad?
 
-That is the goal and the intended experience. KidPad recreates the recognizable Kid Pix workspace, tools, artwork, and sounds as a native iPad app. It is unofficial and independently developed.
+That is the goal and the intended experience. KidPad recreates the recognizable Kid Pix workspace, tools, artwork, and sounds as a native iPhone and iPad app. It is unofficial and independently developed.
 
-### Does Version 1 work on iPhone?
+### Does KidPad work on iPhone?
 
-No. Version 1 is the stable iPad release and its IPA is marked iPad-only. Native iPhone support is planned for Version 2.
+Yes. Version 2 uses a dedicated compact iPhone layout while preserving the full iPad interface. The same unsigned IPA supports both device families.
 
 ### How was KidPad made?
 

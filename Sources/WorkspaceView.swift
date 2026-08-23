@@ -89,6 +89,10 @@ struct WorkspaceView: View {
     @State private var recentDrawings: [RecentDrawingSummary]
     @State private var canvasRevision = 0
     @State private var viewportSize = CGSize(width: 1024, height: 768)
+    @State private var phoneToolPage = 0
+    @State private var phoneOptionShelfVisible = true
+    @State private var phoneShowsColors = false
+    @State private var phoneMenuBarVisible = true
     @AppStorage("KidPad.soundEnabled") private var soundEnabled = true
     @AppStorage("KidPad.pressureEnabled") private var pressureEnabled = true
     @AppStorage("KidPad.leftHandedMode") private var leftHandedMode = false
@@ -139,6 +143,42 @@ struct WorkspaceView: View {
         let cellSide: CGFloat
     }
 
+    struct PhoneToolbarLayout: Equatable {
+        let itemsPerPage: Int
+        let pageCount: Int
+        let cellSide: CGFloat
+    }
+
+    static func phoneToolbarLayout(viewportWidth: CGFloat, itemCount: Int, includesMenuRestore: Bool = false) -> PhoneToolbarLayout {
+        let safeWidth = max(320, viewportWidth)
+        // Two paging arrows, the current color, the option-shelf toggle, and an
+        // optional menu restore button when the phone menu bar is collapsed.
+        let fixedControlWidth: CGFloat = includesMenuRestore ? 220 : 176
+        let availableWidth = max(144, safeWidth - fixedControlWidth)
+        let itemsPerPage = max(3, min(max(1, itemCount), Int(availableWidth / 44)))
+        return PhoneToolbarLayout(
+            itemsPerPage: itemsPerPage,
+            pageCount: max(1, Int(ceil(Double(max(1, itemCount)) / Double(itemsPerPage)))),
+            cellSide: min(68, availableWidth / CGFloat(itemsPerPage))
+        )
+    }
+
+    static func usesPhoneWorkbench(userInterfaceIdiom: UIUserInterfaceIdiom) -> Bool {
+        userInterfaceIdiom == .phone
+    }
+
+    private var usesPhoneWorkbench: Bool {
+        Self.usesPhoneWorkbench(userInterfaceIdiom: UIDevice.current.userInterfaceIdiom)
+    }
+
+    static func phoneCanCollapseMenu(viewportSize _: CGSize, userInterfaceIdiom: UIUserInterfaceIdiom) -> Bool {
+        usesPhoneWorkbench(userInterfaceIdiom: userInterfaceIdiom)
+    }
+
+    private var phoneCanCollapseMenu: Bool {
+        Self.phoneCanCollapseMenu(viewportSize: viewportSize, userInterfaceIdiom: UIDevice.current.userInterfaceIdiom)
+    }
+
     static func primaryToolbarLayout(viewportWidth: CGFloat, itemCount: Int) -> PrimaryToolbarLayout {
         let safeItemCount = max(1, itemCount)
         let minimumTouchSide: CGFloat = 44
@@ -162,11 +202,12 @@ struct WorkspaceView: View {
     }
 
     private var adaptiveOptionPageSize: Int {
-        max(1, min(10, Int((viewportSize.width - optionPageHeaderWidth) / KidPixChrome.optionCell)))
+        max(1, min(10, Int((viewportSize.width - optionPageHeaderWidth) / adaptiveOptionCell)))
     }
 
-    private var optionArrowWidth: CGFloat { viewportSize.width < 420 ? 52 : 56 }
-    private var optionLabelWidth: CGFloat { viewportSize.width < 420 ? 76 : 96 }
+    private var adaptiveOptionCell: CGFloat { usesPhoneWorkbench ? 50 : KidPixChrome.optionCell }
+    private var optionArrowWidth: CGFloat { usesPhoneWorkbench ? 44 : (viewportSize.width < 420 ? 52 : 56) }
+    private var optionLabelWidth: CGFloat { usesPhoneWorkbench ? 64 : (viewportSize.width < 420 ? 76 : 96) }
     private var optionPageHeaderWidth: CGFloat { optionArrowWidth * 2 + optionLabelWidth }
 
     private func optionPageCount(itemCount: Int, pageSize: Int? = nil) -> Int {
@@ -482,26 +523,55 @@ struct WorkspaceView: View {
         GeometryReader { geometry in
             ZStack(alignment: .topLeading) {
                 KidPixChrome.fieldGrey.ignoresSafeArea()
-                VStack(spacing: 0) {
-                    referenceMenuBar
-                    sourceToolbarResponsive
-                    optionStrip
-                    HStack(alignment: .top, spacing: 0) {
-                        if !isLeftHanded {
-                            sourceColorBar(width: adaptivePaletteWidth)
+                if usesPhoneWorkbench {
+                    VStack(spacing: 0) {
+                        if !phoneCanCollapseMenu || phoneMenuBarVisible {
+                            phoneMenuBar
                         }
-                        canvasSurface
-                            .padding(8)
-                            .background(KidPixChrome.fieldGrey)
-                            .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-                        if isLeftHanded {
-                            sourceColorBar(width: adaptivePaletteWidth)
+                        phoneToolbar
+                        ZStack(alignment: .top) {
+                            canvasSurface
+                                .padding(8)
+                                .background(KidPixChrome.fieldGrey)
+                                .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+                            if phoneOptionShelfVisible {
+                                Group {
+                                    if phoneShowsColors {
+                                        phoneColorShelf
+                                    } else {
+                                        optionStrip
+                                    }
+                                }
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                                .zIndex(5)
+                            }
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .clipped()
+                } else {
+                    VStack(spacing: 0) {
+                        referenceMenuBar
+                        sourceToolbarResponsive
+                        optionStrip
+                        HStack(alignment: .top, spacing: 0) {
+                            if !isLeftHanded {
+                                sourceColorBar(width: adaptivePaletteWidth)
+                            }
+                            canvasSurface
+                                .padding(8)
+                                .background(KidPixChrome.fieldGrey)
+                                .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+                            if isLeftHanded {
+                                sourceColorBar(width: adaptivePaletteWidth)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .clipped()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .clipped()
                 menuDismissScrim
                 classicMenuDropdown
                 statusToast
@@ -509,9 +579,14 @@ struct WorkspaceView: View {
             .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("workspace")
-            .onAppear { viewportSize = geometry.size }
-            .onChange(of: geometry.size) { _, nextSize in viewportSize = nextSize }
+            .onAppear {
+                viewportSize = geometry.size
+            }
+            .onChange(of: geometry.size) { _, nextSize in
+                viewportSize = nextSize
+            }
         }
+        .ignoresSafeArea(.container, edges: usesPhoneWorkbench ? .bottom : [])
         .onChange(of: openMenuID) { _, menu in
             if menu != nil { exportMessage = "" }
         }
@@ -710,6 +785,180 @@ struct WorkspaceView: View {
         }
     }
 
+    private var phoneToolbar: some View {
+        let itemCount = tools.count + 2
+        let showsMenuRestore = phoneCanCollapseMenu && !phoneMenuBarVisible
+        let layout = Self.phoneToolbarLayout(
+            viewportWidth: viewportSize.width,
+            itemCount: itemCount,
+            includesMenuRestore: showsMenuRestore
+        )
+        let page = min(phoneToolPage, layout.pageCount - 1)
+        let start = page * layout.itemsPerPage
+        let end = min(itemCount, start + layout.itemsPerPage)
+        return HStack(spacing: 0) {
+            phoneChromeButton(systemName: "chevron.left", label: "Previous tool page", height: layout.cellSide, enabled: layout.pageCount > 1) {
+                phoneToolPage = (page + layout.pageCount - 1) % layout.pageCount
+                SoundPlayer.submenuOptionClick()
+            }
+            ForEach(start..<end, id: \.self) { index in
+                phoneToolbarItem(at: index, side: layout.cellSide)
+            }
+            if end - start < layout.itemsPerPage {
+                ForEach(0..<(layout.itemsPerPage - (end - start)), id: \.self) { _ in
+                    Color.white
+                        .frame(width: layout.cellSide, height: layout.cellSide)
+                        .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
+                        .accessibilityHidden(true)
+                }
+            }
+            Button {
+                phoneShowsColors = true
+                withAnimation(.linear(duration: 0.12)) { phoneOptionShelfVisible = true }
+                SoundPlayer.submenuColorClick()
+            } label: {
+                Rectangle()
+                    .fill(selectedColor)
+                    .padding(5)
+                    .frame(width: 44, height: layout.cellSide)
+                    .background(Color.white)
+                    .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Choose Color")
+            .accessibilityIdentifier("phone.palette.current")
+            phoneChromeButton(
+                systemName: phoneOptionShelfVisible ? "chevron.up" : "chevron.down",
+                label: phoneOptionShelfVisible ? "Hide options" : "Show options",
+                height: layout.cellSide
+            ) {
+                withAnimation(.linear(duration: 0.12)) { phoneOptionShelfVisible.toggle() }
+            }
+            if showsMenuRestore {
+                phoneMenuRestoreButton(height: layout.cellSide) {
+                    withAnimation(.linear(duration: 0.12)) { phoneMenuBarVisible = true }
+                }
+            }
+            phoneChromeButton(systemName: "chevron.right", label: "Next tool page", height: layout.cellSide, enabled: layout.pageCount > 1) {
+                phoneToolPage = (page + 1) % layout.pageCount
+                SoundPlayer.submenuOptionClick()
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: layout.cellSide)
+        // When this row becomes the topmost phone chrome, keep its controls
+        // inside the window bounds. Otherwise the one-point border places the
+        // accessibility frame at y = -0.5 and makes the restore button untappable
+        // for Switch Control and XCTest even though direct touch still works.
+        .padding(.top, showsMenuRestore ? 1 : 0)
+        .background(KidPixChrome.chromeGrey)
+        .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+        .clipped()
+        .buttonStyle(.plain)
+    }
+
+    private func phoneChromeButton(
+        systemName: String,
+        label: String,
+        height: CGFloat,
+        enabled: Bool = true,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 24, weight: .black))
+                .frame(width: 44, height: height)
+                .contentShape(Rectangle())
+                .background(KidPixChrome.chromeGrey)
+                .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
+        }
+        .disabled(!enabled)
+        .opacity(enabled ? 1 : 0.25)
+        .accessibilityLabel(label)
+    }
+
+    private func phoneMenuRestoreButton(height: CGFloat, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 0) {
+                Text("MENU")
+                    .font(.kidPix(9))
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 18, weight: .black))
+            }
+            .foregroundStyle(Color.black)
+            .frame(width: 44, height: height)
+            .contentShape(Rectangle())
+            .background(Color.white)
+            .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Show File Edit Goodies menu")
+        .accessibilityIdentifier("phone.menu.show")
+    }
+
+    @ViewBuilder private func phoneToolbarItem(at index: Int, side: CGFloat) -> some View {
+        if index == 0 {
+            Button { performSave() } label: { referenceImage("kp-m_27", side: side) }
+                .accessibilityLabel("Save")
+                .accessibilityIdentifier("tool.save")
+                .kidPixHoverHighlight()
+        } else if index <= tools.count {
+            let item = tools[index - 1]
+            Button {
+                chooseTool(item.0)
+                phoneShowsColors = false
+                withAnimation(.linear(duration: 0.12)) { phoneOptionShelfVisible = true }
+            } label: {
+                referenceImage(item.1, selected: selectedTool == item.0, side: side)
+            }
+            .accessibilityLabel(item.2)
+            .accessibilityIdentifier(item.0 == .truck ? "tool.movingVan" : "tool.\(item.0.rawValue)")
+            .kidPixHoverHighlight()
+        } else {
+            Button { performUndo() } label: { referenceImage("kp-m_39", side: side) }
+                .accessibilityLabel("Undo Guy")
+                .accessibilityIdentifier("tool.undo")
+                .kidPixHoverHighlight()
+        }
+    }
+
+    private var phoneColorShelf: some View {
+        HStack(spacing: 0) {
+            optionPageHeader("COLOR", page: palettePage, pageCount: Self.sourcePalettePageCount) {
+                palettePage = (palettePage + Self.sourcePalettePageCount - 1) % Self.sourcePalettePageCount
+                SoundPlayer.submenuColorClick()
+            } next: {
+                palettePage = (palettePage + 1) % Self.sourcePalettePageCount
+                SoundPlayer.submenuColorClick()
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 2) {
+                    ForEach(Array(referencePaletteColors.enumerated()), id: \.offset) { index, color in
+                        Button {
+                            selectedColor = color
+                            canvasView?.inkColor = UIColor(color)
+                            SoundPlayer.submenuColorClick()
+                        } label: {
+                            Rectangle()
+                                .fill(color)
+                                .frame(width: adaptiveOptionCell, height: adaptiveOptionCell)
+                                .background(Color.white)
+                                .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
+                                .overlay(Rectangle().inset(by: 2).stroke(selectedColor == color ? KidPixChrome.selectionRed : Color.clear, lineWidth: 2))
+                        }
+                        .accessibilityLabel("Color \(index + 1)")
+                        .accessibilityIdentifier("palette.color.\(index + 1)")
+                    }
+                }
+            }
+        }
+        .frame(height: KidPixChrome.optionHeight)
+        .background(Color.white)
+        .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("option.strip.color")
+    }
+
     @ViewBuilder private func sourceToolbarItems(cellSide: CGFloat) -> some View {
         Button { performSave() } label: { referenceImage("kp-m_27", side: cellSide) }
             .accessibilityLabel("Save")
@@ -774,6 +1023,40 @@ struct WorkspaceView: View {
         .zIndex(20)
     }
 
+    private var phoneMenuBar: some View {
+        HStack(spacing: 8) {
+            ClassicMacMenu(openMenuID: $openMenuID, title: "File")
+                .accessibilityIdentifier("menu.file")
+            ClassicMacMenu(openMenuID: $openMenuID, title: "Edit")
+                .accessibilityIdentifier("menu.edit")
+            ClassicMacMenu(openMenuID: $openMenuID, title: "Goodies")
+                .accessibilityIdentifier("menu.goodies")
+            Spacer(minLength: 0)
+            if phoneCanCollapseMenu {
+                Button {
+                    openMenuID = nil
+                    withAnimation(.linear(duration: 0.12)) { phoneMenuBarVisible = false }
+                } label: {
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 23, weight: .black))
+                        .frame(width: 48, height: KidPixChrome.menuHeight)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Hide File Edit Goodies menu")
+                .accessibilityIdentifier("phone.menu.hide")
+            }
+        }
+        .font(.kidPix(24, weight: .bold))
+        .foregroundStyle(.black)
+        .padding(.leading, 6)
+        .frame(height: KidPixChrome.menuHeight, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .background(Color.white)
+        .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+        .zIndex(20)
+    }
+
     private var referenceToolbar: some View {
         VStack(spacing: 0) {
             Button { performSave() } label: { referenceImage("kp-m_27") }.accessibilityLabel("Save").accessibilityIdentifier("tool.save")
@@ -828,6 +1111,7 @@ struct WorkspaceView: View {
             spriteColumn: selectedSpriteColumn,
             pressureEnabled: pressureEnabled,
             revision: canvasRevision,
+            fillsAvailableSpace: usesPhoneWorkbench,
             canvasView: $canvasView
         )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -859,12 +1143,12 @@ struct WorkspaceView: View {
             Image(systemName: "pawprint.fill")
                 .font(.system(size: 30, weight: .bold))
                 .foregroundStyle(Color.black)
-                .frame(width: KidPixChrome.optionCell, height: KidPixChrome.optionCell)
+                .frame(width: adaptiveOptionCell, height: adaptiveOptionCell)
                 .background(Color.white)
                 .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
                 .overlay(Rectangle().inset(by: 2).stroke(selectedBrushVariant == brush.id ? KidPixChrome.selectionRed : Color.clear, lineWidth: 2))
         } else {
-            referenceImage(brush.assetName, selected: selectedBrushVariant == brush.id, side: KidPixChrome.optionCell)
+            referenceImage(brush.assetName, selected: selectedBrushVariant == brush.id, side: adaptiveOptionCell)
         }
     }
 
@@ -1021,7 +1305,7 @@ struct WorkspaceView: View {
             referenceImage(
                 line ? "pw\(index)" : "tool-submenu-pencil-size-\(index)",
                 selected: Int(selectedWidth) == widths[index - 1],
-                side: KidPixChrome.optionCell
+                side: adaptiveOptionCell
             )
         }
         .accessibilityLabel("\(line ? "Line" : "Pencil") Size \(index)")
@@ -1045,7 +1329,7 @@ struct WorkspaceView: View {
                 .resizable()
                 .interpolation(.none)
                 .scaledToFit()
-                .frame(width: KidPixChrome.optionCell, height: KidPixChrome.optionCell)
+                .frame(width: adaptiveOptionCell, height: adaptiveOptionCell)
                 .background(Color.white)
                 .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
                 .overlay(Rectangle().inset(by: 2).stroke(
@@ -1125,7 +1409,7 @@ struct WorkspaceView: View {
                                         .resizable()
                                         .interpolation(.none)
                                         .scaledToFit()
-                                        .frame(width: KidPixChrome.optionCell, height: KidPixChrome.optionCell)
+                                        .frame(width: adaptiveOptionCell, height: adaptiveOptionCell)
                                         .background(Color.white)
                                         .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
                                         .overlay(Rectangle().inset(by: 2).stroke(shapeFillEnabled ? Color.clear : KidPixChrome.selectionRed, lineWidth: 2))
@@ -1157,7 +1441,7 @@ struct WorkspaceView: View {
                                     SoundPlayer.setEraserVariant(index)
                                     SoundPlayer.submenuOptionClick()
                                 } label: {
-                                    referenceImage("tool-submenu-eraser-\(option.asset)", selected: selectedEraserVariant == index)
+                                    referenceImage("tool-submenu-eraser-\(option.asset)", selected: selectedEraserVariant == index, side: adaptiveOptionCell)
                                 }
                                 .accessibilityLabel(option.name)
                                 .accessibilityIdentifier("eraser.variant.\(index + 1)")
@@ -1213,7 +1497,7 @@ struct WorkspaceView: View {
                                     SoundPlayer.setMixerVariant(index)
                                     SoundPlayer.submenuOptionClick()
                                 } label: {
-                                    referenceImage("tool-submenu-wacky-mixer-\(164 + index)", selected: selectedMixerVariant == index)
+                                    referenceImage("tool-submenu-wacky-mixer-\(164 + index)", selected: selectedMixerVariant == index, side: adaptiveOptionCell)
                                 }
                                 .accessibilityLabel(names[index])
                                 .accessibilityIdentifier("mixer.variant.\(index + 1)")
@@ -1269,7 +1553,7 @@ struct WorkspaceView: View {
                                         canvasView?.refreshFromDocument()
                                         SoundPlayer.submenuOptionClick()
                                     } label: {
-                                        referenceImage(name, selected: selectedStampIndex == index)
+                                        referenceImage(name, selected: selectedStampIndex == index, side: adaptiveOptionCell)
                                     }
                                     .accessibilityLabel(stampPage == 2 ? "Sticker \(index - 11)" : "Stamp \(index + 1)")
                                     .accessibilityIdentifier(stampPage == 2 ? "sticker.\(index - 11)" : "stamp.\(index + 1)")
@@ -1300,7 +1584,7 @@ struct WorkspaceView: View {
                                     } label: {
                                         Image(uiImage: document.spritePreview(sheet: spriteSheetPage, row: spriteRow, column: column))
                                             .resizable().interpolation(.none)
-                                            .frame(width: KidPixChrome.optionCell, height: KidPixChrome.optionCell)
+                                            .frame(width: adaptiveOptionCell, height: adaptiveOptionCell)
                                             .background(Color.white)
                                             .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
                                             .overlay(Rectangle().inset(by: 2).stroke(selectedSpriteColumn == column ? KidPixChrome.selectionRed : Color.clear, lineWidth: 2))
@@ -1365,7 +1649,8 @@ struct WorkspaceView: View {
                                 } label: {
                                     referenceImage(
                                         "tool-submenu-truck-\(192 + index)",
-                                        selected: Self.isImplementedTruckOption(index) && selectedTruckVariant == index
+                                        selected: Self.isImplementedTruckOption(index) && selectedTruckVariant == index,
+                                        side: adaptiveOptionCell
                                     )
                                 }
                                 .accessibilityLabel(Self.isImplementedTruckOption(index) ? "Truck Size \(index + 1)" : "Magnet")
@@ -1478,7 +1763,7 @@ private extension View {
 
 private struct CanvasRepresentable: UIViewRepresentable {
     let document: RasterDocument; let color: Color; let tool: CanvasTool; let width: CGFloat; let pencilTexture: PencilTexture; let shapeFillEnabled: Bool; let eraserVariant: Int; let brushVariant: Int; let mixerVariant: Int; let truckVariant: Int; let truckCopiesSource: Bool; let alphabetCharacter: Character
-    let stampPage: Int; let stampIndex: Int; let spriteSheet: Int; let spriteRow: Int; let spriteColumn: Int; let pressureEnabled: Bool; let revision: Int
+    let stampPage: Int; let stampIndex: Int; let spriteSheet: Int; let spriteRow: Int; let spriteColumn: Int; let pressureEnabled: Bool; let revision: Int; let fillsAvailableSpace: Bool
     @Binding var canvasView: RasterCanvasView?
 
     final class Coordinator {
@@ -1488,13 +1773,14 @@ private struct CanvasRepresentable: UIViewRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeUIView(context: Context) -> LetterboxedCanvasHost {
-        let host = LetterboxedCanvasHost(document: document)
+        let host = LetterboxedCanvasHost(document: document, fillsAvailableSpace: fillsAvailableSpace)
         apply(to: host.canvasView)
         context.coordinator.appliedRevision = revision
         DispatchQueue.main.async { canvasView = host.canvasView }
         return host
     }
     func updateUIView(_ uiView: LetterboxedCanvasHost, context: Context) {
+        uiView.fillsAvailableSpace = fillsAvailableSpace
         apply(to: uiView.canvasView)
         if context.coordinator.appliedRevision != revision {
             uiView.canvasView.refreshFromDocument()

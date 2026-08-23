@@ -3,7 +3,7 @@ set -euo pipefail
 
 project_dir="${PROJECT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 output_dir="${KIDPAD_OUTPUT_DIR:-$project_dir/build/releases}"
-release_version="${KIDPAD_RELEASE_VERSION:-1.0.0}"
+release_version="${KIDPAD_RELEASE_VERSION:-2.0.0}"
 release_basename="KidPad-v${release_version}-unsigned"
 derived_dir="$(mktemp -d /tmp/kidpad-public-device.XXXXXX)"
 stage_dir="$(mktemp -d /tmp/kidpad-public-ipa.XXXXXX)"
@@ -40,8 +40,8 @@ if actual_version != expected_version:
     raise SystemExit(f"Version mismatch: expected {expected_version}, found {actual_version}")
 
 families = info.get("UIDeviceFamily")
-if families != [2]:
-    raise SystemExit(f"Version 1 must be iPad-only; UIDeviceFamily is {families!r}")
+if families != [1, 2]:
+    raise SystemExit(f"The public IPA must support iPhone and iPad; UIDeviceFamily is {families!r}")
 PY
 
 mkdir -p "$stage_dir/Payload" "$output_dir"
