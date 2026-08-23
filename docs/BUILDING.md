@@ -6,7 +6,7 @@ downloaded after user consent and is never part of the compiled app bundle.
 ## Requirements
 
 - macOS with Xcode and the project’s supported iOS SDK
-- An iPad Simulator runtime; the UAT reference device is iPad Pro 11-inch (M5)
+- An iPhone or iPad Simulator runtime
 - Apple Developer signing only when installing on physical hardware
 
 ## Public Simulator build
@@ -23,17 +23,18 @@ The script builds `ReleasePublic` for `iphonesimulator` in a temporary derived
 data directory, locates `KidPad.app`, and runs the release asset scanner. It
 must pass before sharing a Simulator app or creating a release artifact.
 
-## Unsigned iPad IPA
+## Unsigned iPhone and iPad IPA
 
 ```bash
 Scripts/package_public_ipa.sh
 ```
 
-This produces `build/releases/KidPad-v1.0.0-unsigned.ipa` and a `.sha256`
+This produces `build/releases/KidPad-v2.0.0-unsigned.ipa` and a `.sha256`
 checksum from a generic iOS `ReleasePublic` build. The package script verifies
-the app version and confirms that Version 1 advertises only the iPad device
-family. It runs the same asset scanner and verifies the new ZIP before replacing
-any previous artifact. A sideloading tool must re-sign it for the user's iPad.
+the app version and confirms that Version 2 advertises both the iPhone and iPad
+device families. It runs the same asset scanner and verifies the new ZIP before
+replacing any previous artifact. A sideloading tool must re-sign it for the
+user's iPhone or iPad.
 The Classic Pack is not inside the IPA; the installed app asks before
 downloading it from the pinned upstream revision.
 
@@ -72,14 +73,14 @@ the ignored private test cache and is not a publication check.
 
 ## Xcode workflow
 
-Open `KidPad.xcodeproj`, select the `KidPad` scheme, choose an iPad Simulator,
+Open `KidPad.xcodeproj`, select the `KidPad` scheme, choose an iPhone or iPad Simulator,
 and run. All configurations keep the Classic Pack out of the app bundle;
 `ReleasePublic` is the supported distribution configuration.
 
 ## Physical devices
 
 A physical-device build requires an Apple Developer team, provisioning, and
-signing configured in Xcode. Select a connected iPad, choose the project team,
+signing configured in Xcode. Select a connected iPhone or iPad, choose the project team,
 and build `ReleasePublic`.
 
 The Version 1 candidate was installed cleanly on an iPad Pro 12.9-inch (6th

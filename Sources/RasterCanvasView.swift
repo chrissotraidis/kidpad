@@ -3,9 +3,17 @@ import UIKit
 final class LetterboxedCanvasHost: UIScrollView, UIScrollViewDelegate {
     let canvasView: RasterCanvasView
     private var lastViewportSize = CGSize.zero
+    var fillsAvailableSpace: Bool {
+        didSet {
+            guard fillsAvailableSpace != oldValue else { return }
+            lastViewportSize = .zero
+            setNeedsLayout()
+        }
+    }
 
-    init(document: RasterDocument) {
+    init(document: RasterDocument, fillsAvailableSpace: Bool = false) {
         canvasView = RasterCanvasView(document: document)
+        self.fillsAvailableSpace = fillsAvailableSpace
         super.init(frame: .zero)
         backgroundColor = .white
         isOpaque = true
@@ -20,6 +28,8 @@ final class LetterboxedCanvasHost: UIScrollView, UIScrollViewDelegate {
         showsVerticalScrollIndicator = false
         scrollsToTop = false
         panGestureRecognizer.minimumNumberOfTouches = 2
+        panGestureRecognizer.addTarget(self, action: #selector(handleCanvasNavigation(_:)))
+        pinchGestureRecognizer?.addTarget(self, action: #selector(handleCanvasNavigation(_:)))
         addSubview(canvasView)
         isAccessibilityElement = false
         accessibilityElements = [canvasView]
@@ -33,12 +43,17 @@ final class LetterboxedCanvasHost: UIScrollView, UIScrollViewDelegate {
         if lastViewportSize != bounds.size {
             let preservedZoom = zoomScale
             setZoomScale(1, animated: false)
-            let fitted = RasterCanvasView.displayRect(
-                forDocumentSize: canvasView.document.size,
-                in: CGRect(origin: .zero, size: bounds.size)
-            )
-            canvasView.frame = CGRect(origin: .zero, size: fitted.size)
-            contentSize = fitted.size
+            let canvasSize: CGSize
+            if fillsAvailableSpace {
+                canvasSize = bounds.size
+            } else {
+                canvasSize = RasterCanvasView.displayRect(
+                    forDocumentSize: canvasView.document.size,
+                    in: CGRect(origin: .zero, size: bounds.size)
+                ).size
+            }
+            canvasView.frame = CGRect(origin: .zero, size: canvasSize)
+            contentSize = canvasSize
             lastViewportSize = bounds.size
             setZoomScale(min(max(preservedZoom, minimumZoomScale), maximumZoomScale), animated: false)
         }
@@ -51,6 +66,18 @@ final class LetterboxedCanvasHost: UIScrollView, UIScrollViewDelegate {
         centerCanvas()
         let percent = Int((zoomScale * 100).rounded())
         canvasView.accessibilityValue = "Canvas zoom \(percent) percent"
+    }
+
+    @objc private func handleCanvasNavigation(_ gesture: UIGestureRecognizer) {
+        let navigationStates = [panGestureRecognizer.state, pinchGestureRecognizer?.state]
+        let navigationIsActive = navigationStates.contains { state in
+            state == .began || state == .changed
+        }
+        if navigationIsActive {
+            canvasView.cancelActiveStrokeForNavigation()
+        } else {
+            canvasView.endNavigationSuppression()
+        }
     }
 
     private func centerCanvas() {
@@ -87,11 +114,12 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
     private(set) var lastInput: NormalizedInput?
     private var hoverPoint: CGPoint?
     private var didPlayProgressSound = false
+    private var suppressesDrawingForMultiTouch = false
 
     init(document: RasterDocument) {
         self.document = document
         super.init(frame: .zero)
-        isMultipleTouchEnabled = false
+        isMultipleTouchEnabled = true
         isOpaque = true
         backgroundColor = .white
         accessibilityIdentifier = "kidpad.canvas"
@@ -216,13 +244,46 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
     }
     private var isShape: Bool { [.line, .rectangle, .oval].contains(activeTool) }
 
+    private func activeTouchCount(in event: UIEvent?) -> Int {
+        event?.allTouches?.filter { $0.phase != .ended && $0.phase != .cancelled }.count ?? 0
+    }
+
+    func cancelActiveStrokeForNavigation() {
+        suppressesDrawingForMultiTouch = true
+        document.cancelTransaction()
+        lastPoint = nil
+        previewImage = nil
+        predictedStrokePoints = []
+        didPlayProgressSound = false
+        setNeedsDisplay()
+    }
+
+    func endNavigationSuppression() {
+        suppressesDrawingForMultiTouch = false
+    }
+
+    private func finishMultiTouchSuppressionIfNeeded(event: UIEvent?) {
+        if activeTouchCount(in: event) == 0 {
+            suppressesDrawingForMultiTouch = false
+        }
+    }
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if activeTouchCount(in: event) > 1 {
+            cancelActiveStrokeForNavigation()
+            return
+        }
+        guard !suppressesDrawingForMultiTouch else { return }
         guard let touch = touches.first else { return }; predictedStrokePoints = []; synchronizeDocumentOptions(); record(touch, phase: .began); didPlayProgressSound = false; Task { @MainActor in SoundPlayer.actionStarted(for: activeTool) }; document.beginTransaction(); let point = logicalPoint(touch.location(in: self)); lastPoint = point
-        if [.fill, .mixer, .clear].contains(activeTool) { document.apply(tool: activeTool, from: point, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch)); document.commit(); lastPoint = nil; setNeedsDisplay(); if activeTool == .clear { UIView.animate(withDuration: 0.12, animations: { self.alpha = 0.18 }) { _ in UIView.animate(withDuration: 0.24) { self.alpha = 1 } } } }
-        else if activeTool == .brush { document.apply(tool: activeTool, from: point, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch)); setNeedsDisplay() }
+        if activeTool == .brush { document.apply(tool: activeTool, from: point, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch)); setNeedsDisplay() }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if activeTouchCount(in: event) > 1 {
+            cancelActiveStrokeForNavigation()
+            return
+        }
+        guard !suppressesDrawingForMultiTouch else { return }
         guard let touch = touches.first, let lastPoint else { return }
         predictedStrokePoints = []
         record(touch, phase: .moved)
@@ -268,9 +329,24 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if suppressesDrawingForMultiTouch {
+            finishMultiTouchSuppressionIfNeeded(event: event)
+            return
+        }
         guard let touch = touches.first, let lastPoint else { return }; record(touch, phase: .ended); Task { @MainActor in SoundPlayer.actionEnded(for: activeTool); SoundPlayer.actionReleased(for: activeTool) }; let point = logicalPoint(touch.location(in: self))
         predictedStrokePoints = []
-        if isShape { document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth); document.commit(); previewImage = nil; setNeedsDisplay() }
+        if [.fill, .mixer, .clear].contains(activeTool) {
+            document.apply(tool: activeTool, from: point, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch))
+            document.commit()
+            previewImage = nil
+            setNeedsDisplay()
+            if activeTool == .clear {
+                UIView.animate(withDuration: 0.12, animations: { self.alpha = 0.18 }) { _ in
+                    UIView.animate(withDuration: 0.24) { self.alpha = 1 }
+                }
+            }
+        }
+        else if isShape { document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth); document.commit(); previewImage = nil; setNeedsDisplay() }
         else if activeTool == .pencil || activeTool == .eraser || activeTool == .brush {
             document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch))
             if activeTool == .eraser { document.finishEraserStroke() }
@@ -280,7 +356,16 @@ final class RasterCanvasView: UIView, UIPencilInteractionDelegate {
         else if activeTool == .truck { document.apply(tool: activeTool, from: lastPoint, to: point, color: inkColor, width: inkWidth, pressure: pressure(touch)); document.commit(); previewImage = nil; setNeedsDisplay() }
         self.lastPoint = nil; didPlayProgressSound = false
     }
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) { if let touch = touches.first { record(touch, phase: .cancelled) }; document.cancelTransaction(); lastPoint = nil; previewImage = nil; predictedStrokePoints = []; didPlayProgressSound = false; setNeedsDisplay() }
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first { record(touch, phase: .cancelled) }
+        document.cancelTransaction()
+        lastPoint = nil
+        previewImage = nil
+        predictedStrokePoints = []
+        didPlayProgressSound = false
+        finishMultiTouchSuppressionIfNeeded(event: event)
+        setNeedsDisplay()
+    }
 
     @objc private func handleHover(_ gesture: UIHoverGestureRecognizer) {
         let point = gesture.location(in: self)

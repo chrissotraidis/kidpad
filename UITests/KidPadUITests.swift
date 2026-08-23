@@ -101,6 +101,55 @@ final class KidPadUITests: XCTestCase {
         nativeApp.terminate()
     }
 
+    func testPhoneLandscapeMenuCanCollapseAndRestore() {
+        app.terminate()
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let nativeApp = XCUIApplication()
+        nativeApp.launchArguments = ["--reset-document"]
+        nativeApp.launch()
+
+        let hideMenu = nativeApp.buttons["Hide File Edit Goodies menu"]
+        XCTAssertTrue(hideMenu.waitForExistence(timeout: 5))
+        hideMenu.tap()
+        XCTAssertFalse(nativeApp.buttons["File"].exists)
+
+        let showMenu = nativeApp.buttons["Show File Edit Goodies menu"]
+        XCTAssertTrue(showMenu.waitForExistence(timeout: 3))
+        XCTAssertGreaterThanOrEqual(showMenu.frame.height, 44)
+        let canvas = nativeApp.otherElements["kidpad.canvas"]
+        XCTAssertTrue(canvas.waitForExistence(timeout: 3))
+        XCTAssertLessThanOrEqual(nativeApp.frame.maxY - canvas.frame.maxY, 12, "The phone canvas should extend through the bottom safe area, leaving only its classic inset.")
+        showMenu.tap()
+        XCTAssertTrue(nativeApp.buttons["File"].waitForExistence(timeout: 3))
+
+        XCUIDevice.shared.orientation = .portrait
+        nativeApp.terminate()
+    }
+
+    func testPhonePortraitMenuCanCollapseAndRestore() {
+        app.terminate()
+        XCUIDevice.shared.orientation = .portrait
+        let nativeApp = XCUIApplication()
+        nativeApp.launchArguments = ["--reset-document"]
+        nativeApp.launch()
+
+        let hideMenu = nativeApp.buttons["Hide File Edit Goodies menu"]
+        XCTAssertTrue(hideMenu.waitForExistence(timeout: 5))
+        hideMenu.tap()
+        XCTAssertFalse(nativeApp.buttons["File"].exists)
+
+        let showMenu = nativeApp.buttons["Show File Edit Goodies menu"]
+        XCTAssertTrue(showMenu.waitForExistence(timeout: 3))
+        XCTAssertGreaterThanOrEqual(showMenu.frame.height, 44)
+        let canvas = nativeApp.otherElements["kidpad.canvas"]
+        XCTAssertTrue(canvas.waitForExistence(timeout: 3))
+        XCTAssertLessThanOrEqual(nativeApp.frame.maxY - canvas.frame.maxY, 12, "The portrait canvas should extend through the bottom safe area, leaving only its classic inset.")
+        showMenu.tap()
+        XCTAssertTrue(nativeApp.buttons["File"].waitForExistence(timeout: 3))
+
+        nativeApp.terminate()
+    }
+
     func testLeftHandedModeMirrorsToolbarToTheRight() {
         app.terminate()
         let nativeApp = XCUIApplication()
@@ -138,7 +187,7 @@ final class KidPadUITests: XCTestCase {
         )
     }
 
-    func testCanvasKeepsDocumentAspectAcrossOrientations() {
+    func testCanvasLayoutTracksPlatformAcrossOrientations() {
         app.terminate()
         let nativeApp = XCUIApplication()
         nativeApp.launchArguments = ["--reset-document"]
@@ -151,7 +200,12 @@ final class KidPadUITests: XCTestCase {
         XCUIDevice.shared.orientation = .portrait
         XCTAssertTrue(canvas.waitForExistence(timeout: 5))
         let portraitFrame = canvas.frame
-        XCTAssertEqual(portraitFrame.width / portraitFrame.height, expectedAspect, accuracy: 0.08, "Portrait canvas should keep the 1920x1200 document aspect")
+        let usesPhoneFillMode = portraitFrame.height > portraitFrame.width
+        if usesPhoneFillMode {
+            XCTAssertGreaterThan(portraitFrame.height, portraitFrame.width, "Phone portrait canvas should fill the tall viewport")
+        } else {
+            XCTAssertEqual(portraitFrame.width / portraitFrame.height, expectedAspect, accuracy: 0.08, "iPad canvas should keep the 1920x1200 document aspect")
+        }
         let portrait = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         portrait.name = "KidPad letterboxed splash portrait"
         portrait.lifetime = .keepAlways
@@ -161,7 +215,11 @@ final class KidPadUITests: XCTestCase {
         XCTAssertTrue(canvas.waitForExistence(timeout: 5))
         XCTAssertTrue(nativeApp.buttons["Wacky Pencil"].exists)
         let landscapeFrame = canvas.frame
-        XCTAssertEqual(landscapeFrame.width / landscapeFrame.height, expectedAspect, accuracy: 0.08, "Landscape canvas should keep the 1920x1200 document aspect")
+        if usesPhoneFillMode {
+            XCTAssertGreaterThan(landscapeFrame.width, landscapeFrame.height, "Phone landscape canvas should fill the wide viewport")
+        } else {
+            XCTAssertEqual(landscapeFrame.width / landscapeFrame.height, expectedAspect, accuracy: 0.08, "iPad canvas should keep the 1920x1200 document aspect")
+        }
         let landscape = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         landscape.name = "KidPad letterboxed splash landscape"
         landscape.lifetime = .keepAlways

@@ -720,6 +720,35 @@ final class CanvasCoreTests: XCTestCase {
         XCTAssertEqual(midpoint.y, document.size.height / 2, accuracy: 1)
     }
 
+    @MainActor
+    func testPhoneCanvasCanFillItsViewportWithoutChangingTheDocument() {
+        let document = RasterDocument(size: RasterDocument.referenceCanvasSize)
+        let host = LetterboxedCanvasHost(document: document, fillsAvailableSpace: true)
+        host.frame = CGRect(x: 0, y: 0, width: 390, height: 600)
+        host.layoutIfNeeded()
+
+        XCTAssertEqual(host.canvasView.frame.size, host.bounds.size)
+        XCTAssertEqual(document.size, RasterDocument.referenceCanvasSize)
+        XCTAssertEqual(host.contentInset, .zero)
+        XCTAssertEqual(host.maximumZoomScale, 6)
+        XCTAssertEqual(host.panGestureRecognizer.minimumNumberOfTouches, 2)
+        XCTAssertTrue(host.canvasView.isMultipleTouchEnabled)
+    }
+
+    @MainActor
+    func testCanvasNavigationRollsBackAnInProgressDrawingStroke() {
+        let document = RasterDocument(size: CGSize(width: 120, height: 80))
+        let original = document.pngData()
+        let canvas = RasterCanvasView(document: document)
+
+        document.beginTransaction()
+        document.apply(tool: .pencil, from: CGPoint(x: 10, y: 10), to: CGPoint(x: 100, y: 60), color: .black, width: 12)
+        XCTAssertNotEqual(document.pngData(), original)
+
+        canvas.cancelActiveStrokeForNavigation()
+        XCTAssertEqual(document.pngData(), original)
+    }
+
     func testCancelledCanvasTransactionRollsBackPartialStroke() {
         let document = RasterDocument(size: CGSize(width: 120, height: 80))
         let original = document.pngData()
@@ -741,6 +770,37 @@ final class CanvasCoreTests: XCTestCase {
         XCTAssertEqual(phone.columns, 7)
         XCTAssertGreaterThanOrEqual(phone.cellSide, 44)
         XCTAssertEqual(phone.cellSide * CGFloat(phone.columns), 390, accuracy: 0.001)
+    }
+
+    func testPhoneToolbarUsesOnePagedRowAndLeavesCanvasFullWidth() {
+        let portrait = WorkspaceView.phoneToolbarLayout(viewportWidth: 390, itemCount: 14)
+        XCTAssertEqual(portrait.itemsPerPage, 4)
+        XCTAssertEqual(portrait.pageCount, 4)
+        XCTAssertGreaterThanOrEqual(portrait.cellSide, 44)
+        XCTAssertEqual(portrait.cellSide * CGFloat(portrait.itemsPerPage) + 176, 390, accuracy: 0.001)
+
+        let landscape = WorkspaceView.phoneToolbarLayout(viewportWidth: 844, itemCount: 14)
+        XCTAssertEqual(landscape.itemsPerPage, 14)
+        XCTAssertEqual(landscape.pageCount, 1)
+        XCTAssertGreaterThanOrEqual(landscape.cellSide, 44)
+        XCTAssertLessThanOrEqual(landscape.cellSide, 68)
+    }
+
+    func testPhoneWorkbenchDoesNotAffectIPadOrMacLayouts() {
+        XCTAssertTrue(WorkspaceView.usesPhoneWorkbench(userInterfaceIdiom: .phone))
+        XCTAssertFalse(WorkspaceView.usesPhoneWorkbench(userInterfaceIdiom: .pad))
+        XCTAssertFalse(WorkspaceView.usesPhoneWorkbench(userInterfaceIdiom: .mac))
+    }
+
+    func testPhoneMenuCollapseAppearsInBothPhoneOrientations() {
+        XCTAssertTrue(WorkspaceView.phoneCanCollapseMenu(viewportSize: CGSize(width: 844, height: 390), userInterfaceIdiom: .phone))
+        XCTAssertTrue(WorkspaceView.phoneCanCollapseMenu(viewportSize: CGSize(width: 390, height: 844), userInterfaceIdiom: .phone))
+        XCTAssertFalse(WorkspaceView.phoneCanCollapseMenu(viewportSize: CGSize(width: 1024, height: 768), userInterfaceIdiom: .pad))
+
+        let collapsedLandscape = WorkspaceView.phoneToolbarLayout(viewportWidth: 844, itemCount: 14, includesMenuRestore: true)
+        XCTAssertEqual(collapsedLandscape.itemsPerPage, 14)
+        XCTAssertEqual(collapsedLandscape.pageCount, 1)
+        XCTAssertGreaterThanOrEqual(collapsedLandscape.cellSide, 44)
     }
 
     func testPressurePolicySupportsNativeAndClassicModes() {
