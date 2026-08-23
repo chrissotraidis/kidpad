@@ -116,6 +116,10 @@ In practical terms: this is intended to be Kid Pix on iPad, but it is not an off
 
 Version 1 was accepted on an iPad Pro 12.9-inch (6th generation) after a clean AltStore installation. First-run Classic Pack setup, Apple Pencil drawing, pressure response, and the lower-latency brush pipeline were exercised on hardware. Tilt, hover, double-tap, squeeze, roll, and the complete palm-rejection matrix remain targeted checks rather than completed claims.
 
+The source-publication and binary-release gates are intentionally separate. See
+the [`public release checklist`](docs/RELEASE_CHECKLIST.md) and
+[`Version 1 changelog`](CHANGELOG.md) for the exact remaining steps.
+
 ## What works
 
 | Area | Current result |
@@ -197,7 +201,7 @@ Yes. After the user agrees, KidPad downloads the pinned Classic Pack directly fr
 
 ### Is it running the JSKidPix website?
 
-No. The product canvas and tools are native Swift code. An optional local web reference exists only for development comparison and is excluded from public builds.
+No. The product canvas and tools are native Swift code. An optional local web reference exists only in the FidelityDev comparison profile. Public builds do not compile that path or link WebKit.
 
 ### Is Kid Pix definitely in the public domain?
 
@@ -226,6 +230,7 @@ xcodebuild -project KidPad.xcodeproj -scheme KidPad -configuration Debug \
   CODE_SIGNING_ALLOWED=NO test
 
 Scripts/verify_release_assets.sh /path/to/ReleasePublic/KidPad.app
+Scripts/verify_no_network.sh .
 ```
 
 Behavior status and remaining validation gaps are tracked in [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md), [`HARDWARE_VALIDATION_REQUIRED.md`](HARDWARE_VALIDATION_REQUIRED.md), and [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md).
@@ -237,6 +242,8 @@ Behavior status and remaining validation gaps are tracked in [`docs/PARITY_MATRI
 - [`docs/BUILDING.md`](docs/BUILDING.md) is the reproducible build and validation guide.
 - [`docs/HISTORICAL_PROVENANCE.md`](docs/HISTORICAL_PROVENANCE.md) records the original-to-JSKidPix-to-KidPad lineage, archival evidence, and known unknowns.
 - [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md) records tool-by-tool behavior status.
+- [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) separates source, unsigned IPA, and marketplace release gates.
+- [`CHANGELOG.md`](CHANGELOG.md) records public release notes.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) explains the contribution workflow.
 - [`SECURITY.md`](SECURITY.md) explains private vulnerability reporting.
 - [`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md) defines the source and asset boundary.

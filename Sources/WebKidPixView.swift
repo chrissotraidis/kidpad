@@ -1,3 +1,4 @@
+#if KIDPAD_FIDELITY_DEV
 import SwiftUI
 import WebKit
 import os
@@ -34,3 +35,4 @@ struct WebKidPixView: UIViewRepresentable {
 
     func updateUIView(_ view: WKWebView, context: Context) { }
 }
+#endif

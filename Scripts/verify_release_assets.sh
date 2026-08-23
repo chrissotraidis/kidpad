@@ -47,3 +47,19 @@ if found:
     raise SystemExit(1)
 print(f"Public asset policy passed for {app}")
 PY
+
+binary_path=""
+for candidate in "$app_path/KidPad" "$app_path/Contents/MacOS/KidPad"; do
+  if [[ -f "$candidate" ]]; then
+    binary_path="$candidate"
+    break
+  fi
+done
+[[ -n "$binary_path" ]] || { print -u2 "Public release blocked: KidPad executable is missing"; exit 1; }
+
+if /usr/bin/otool -L "$binary_path" | /usr/bin/grep -Fq "/WebKit.framework/"; then
+  print -u2 "Public release blocked: development-only WebKit harness is linked"
+  exit 1
+fi
+
+print "Public executable policy passed for $binary_path"

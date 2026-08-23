@@ -2,17 +2,22 @@
 .DS_Store
 build/
 DerivedData/
+*.xcarchive
+*.xcresult
 *.xcuserstate
 xcuserdata/
 
-# Local evidence and tooling (keep the latest written report)
-artifacts/*
-!artifacts/reports/
-!artifacts/reports/**
+# Local evidence and internal agent state
+artifacts/
 .venv/
 design-qa.md
 docs/VISUAL_DESIGN_ITERATION_PLAN.md
 docs/reference/
+AGENT_STATE.md
+BUILD_STATUS.json
+NEXT_BOT_GOAL_LOOP_PROMPT.md
+*Agent_Goal_Loop.md
+*iPadOS_PRD.md
 
 # Historical / third-party reference material that must not ship automatically
 ref/*
@@ -27,13 +32,20 @@ Resources/FidelityDev/*
 !Resources/FidelityDev/README.md
 
 # GPL web reference harness is copied locally from the pinned source clone
-Resources/JSKidPix/
+Resources/JSKidPix/*
 !Resources/JSKidPix/.gitkeep
 
 # Quarantined unverified dumps
 Resources/Quarantined/
 
 # Disk images / ROMs
+*.ipa
+*.mobileprovision
+*.p12
+*.cer
+*.key
+.env
+.env.*
 *.rom
 *.ROM
 *.dsk
