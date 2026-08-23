@@ -20,23 +20,23 @@ enum ClassicAssetCatalog {
     static let rawBaseURL = URL(string: "https://raw.githubusercontent.com/vikrum/kidpix/\(sourceCommit)/")!
 
     static let assets: [ClassicAssetDescriptor] = {
-        let imageNames =
-            (27...39).map { "kp-m_\($0).png" } +
-            ["kidpix.png", "kidpix-guy.png"] +
-            ["bear", "bison", "corn", "eye", "fox", "horse", "hummingbird", "ladybug", "lion", "magnet", "moth", "octopus"]
-                .map { "kp-h-\($0).png" } +
-            (1...6).map { "tool-submenu-pencil-size-\($0).png" } +
-            (70...97).map { "tool-menu-wacky-brush-\($0).png" } +
-            ["cursor-tnt-0.png"] +
-            (164...177).map { "tool-submenu-wacky-mixer-\($0).png" } +
-            (192...205).map { "tool-submenu-truck-\($0).png" } +
-            ["kidpix-spritesheet-0.png", "kidpix-spritesheet-0b.png"] +
-            (1...8).map { "kidpix-spritesheet-\($0).png" } +
-            (1...6).map { "pw\($0).png" } +
-            (178...190).map { "tool-submenu-eraser-\($0).png" } +
-            (1...6).map { "kp-sticker-\($0).png" }
+        var imageNames: [String] = []
+        imageNames += (27...39).map { "kp-m_\($0).png" }
+        imageNames += ["kidpix.png", "kidpix-guy.png"]
+        imageNames += ["bear", "bison", "corn", "eye", "fox", "horse", "hummingbird", "ladybug", "lion", "magnet", "moth", "octopus"]
+            .map { "kp-h-\($0).png" }
+        imageNames += (1...6).map { "tool-submenu-pencil-size-\($0).png" }
+        imageNames += (70...97).map { "tool-menu-wacky-brush-\($0).png" }
+        imageNames += ["cursor-tnt-0.png"]
+        imageNames += (164...177).map { "tool-submenu-wacky-mixer-\($0).png" }
+        imageNames += (192...205).map { "tool-submenu-truck-\($0).png" }
+        imageNames += ["kidpix-spritesheet-0.png", "kidpix-spritesheet-0b.png"]
+        imageNames += (1...8).map { "kidpix-spritesheet-\($0).png" }
+        imageNames += (1...6).map { "pw\($0).png" }
+        imageNames += (178...190).map { "tool-submenu-eraser-\($0).png" }
+        imageNames += (1...6).map { "kp-sticker-\($0).png" }
 
-        let spokenNames = [
+        let spokenNames: [String] = [
             "alpha-a-WAVSOUND.R_0007d8f2.wav",
             "alpha-b-WAVSOUND.R_0007ee1f.wav",
             "alpha-c-WAVSOUND.R_000803fc.wav",
@@ -81,7 +81,7 @@ enum ClassicAssetCatalog {
             "number-question-mark-WAVSOUND.R_000a661d.wav",
         ]
 
-        let soundNames = [
+        let soundNames: [String] = [
             "bubble-pop-2WAVSOUND.R_0004edd3.wav",
             "bubble-pop-3WAVSOUND.R_0004fccd.wav",
             "bubble-pop-4WAVSOUND.R_0004f480.wav",
@@ -144,11 +144,22 @@ enum ClassicAssetCatalog {
             "western-gun-shot-twirl-WAVSOUND.R_0005ed70.wav",
         ]
 
-        let images = imageNames.map { ClassicAssetDescriptor(localName: $0, sourcePath: "img/\($0)") }
-        let spoken = spokenNames.map { ClassicAssetDescriptor(localName: $0, sourcePath: "snd/english/\($0)") }
-        let sounds = soundNames.map { ClassicAssetDescriptor(localName: $0, sourcePath: "snd/\($0)") }
+        let images: [ClassicAssetDescriptor] = imageNames.map {
+            ClassicAssetDescriptor(localName: $0, sourcePath: "img/\($0)")
+        }
+        let spoken: [ClassicAssetDescriptor] = spokenNames.map {
+            ClassicAssetDescriptor(localName: $0, sourcePath: "snd/english/\($0)")
+        }
+        let sounds: [ClassicAssetDescriptor] = soundNames.map {
+            ClassicAssetDescriptor(localName: $0, sourcePath: "snd/\($0)")
+        }
         let splash = ClassicAssetDescriptor(localName: "jskidpix-splash.png", sourcePath: "static/splash.png")
-        return (images + spoken + sounds + [splash]).sorted { $0.localName < $1.localName }
+        var catalog = images
+        catalog.append(contentsOf: spoken)
+        catalog.append(contentsOf: sounds)
+        catalog.append(splash)
+        catalog.sort { $0.localName < $1.localName }
+        return catalog
     }()
 
     static func combinedSHA256(for files: [String: Data]) -> String {
