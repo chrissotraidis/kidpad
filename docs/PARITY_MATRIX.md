@@ -1,9 +1,9 @@
 # KidPad behavior matrix
 
-KidPad is a native Swift application inspired by classic creative software. The
-matrix below records the current native behavior against the pinned JSKidPix
-revision used for engineering comparison. It is not a claim of complete pixel
-or algorithm parity with any commercial Kid Pix release.
+KidPad is an unofficial native Swift recreation of the early Kid Pix
+experience. The matrix below records the current native behavior against the
+pinned JSKidPix revision used for engineering comparison. It is not a claim of
+complete pixel or algorithm parity with every commercial Kid Pix release.
 
 ## Reference boundary
 

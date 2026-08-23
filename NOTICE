@@ -1,11 +1,12 @@
 KidPad
 Copyright 2026 Chris Sotraidis
 
-KidPad is an independent open-source project inspired by the design principles
-and early behavior of Kid Pix, created by Craig Hickman. KID PIX is a registered
-trademark of its owner. This project is not affiliated with, endorsed by, or
-licensed by The Software MacKiev Company, Craig Hickman, or any current Kid Pix
-rights holder.
+KidPad is an independent, unofficial native recreation of the early Kid Pix
+experience created by Craig Hickman. It deliberately recreates recognizable
+tools, presentation, artwork, and sounds obtained through the pinned JSKidPix
+pack. KID PIX is a registered trademark of its owner. This project is not
+affiliated with, endorsed by, or licensed by The Software MacKiev Company,
+Craig Hickman, or any current Kid Pix rights holder.
 
 The original Swift/UIKit/SwiftUI source in Sources/, Tests/, UITests/, and the
 Xcode project scaffolding is licensed under Apache License 2.0. See LICENSE.
@@ -25,9 +26,11 @@ verifies the whole-pack digest, and installs them in Application Support.
   commit 99c67f3427d229f7db60b03dcf19df4d8c2a8ecf
   license: GPL-3.0
 
-The upstream license is the project's basis for this download. It is not an
-independent clearance opinion for every underlying historical image, audio
-file, logo, or trademark. See RIGHTS_AND_LICENSES.md.
+The upstream repository is published under GPL-3.0 and states in its README
+that the original 1989 Kid Pix 1.0 was released into the public domain. Those
+upstream representations are the project's basis for this download. They are
+not an independent clearance opinion for every underlying historical image,
+audio file, logo, or trademark. See RIGHTS_AND_LICENSES.md.
 
 ==========================================================================
 JSKidPix / vikrum/kidpix reference

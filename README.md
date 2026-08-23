@@ -1,8 +1,8 @@
 # KidPad
 
 <p align="center">
-  <strong>A playful, native drawing app for iPad and Mac.</strong><br>
-  Built in Swift with Apple Pencil support, pressure-sensitive brushes, classic creative tools, sound, and real documents.
+  <strong>Kid Pix, native on iPad.</strong><br>
+  An unofficial recreation of Kid Pix 1.0, rebuilt in Swift for Apple Pencil, touch, sound, and modern documents.
 </p>
 
 <p align="center">
@@ -16,12 +16,81 @@
 
 ![KidPad Version 1 running on a physical iPad](docs/readme/kidpad-ipad-v1.png)
 
-KidPad brings the speed and playful spirit of early creative software to a modern native app. The canvas is powered by Core Graphics, the workspace is built with SwiftUI and UIKit, and drawing stays local to the device. There is no emulator or web runtime behind the product canvas.
+KidPad is a native recreation of the classic Kid Pix experience for iPad and Mac. It aims to look, sound, and behave like Kid Pix, using the familiar artwork, sounds, tools, menus, stamps, brushes, and playful interactions available through the pinned [JSKidPix](https://github.com/vikrum/kidpix) project.
 
-Version 1 has been exercised end to end on a physical iPad Pro with Apple Pencil. Installation, first-run setup, the optional Classic Pack download, drawing, pressure response, and the latency-sensitive brush path have all been tested on hardware.
+The experience is deliberately recognizable. This is not a loosely inspired drawing app with a retro skin. KidPad's purpose is to make Kid Pix feel at home on a modern iPad.
 
-> [!IMPORTANT]
-> KidPad is an independent project inspired by classic creative software. It is not Kid Pix, and it is not endorsed by or affiliated with any Kid Pix rights holder.
+> **In one sentence:** KidPad is Kid Pix for iPad, recreated natively and released as an independent, unofficial project.
+
+## What KidPad is
+
+- A new native Swift implementation of the Kid Pix drawing experience.
+- A Core Graphics canvas with SwiftUI and UIKit controls, not a browser canvas.
+- An iPad-first app with Apple Pencil pressure, touch input, two-finger zoom and pan, autosave, recent drawings, and PNG export.
+- A recreation that uses the classic artwork and sounds downloaded from a pinned JSKidPix revision after the user approves the download.
+- A project that also runs on macOS through Mac Catalyst.
+
+## What KidPad is not
+
+- It is not an official Kid Pix release, update, or product from Software MacKiev.
+- It is not built from the original commercial Kid Pix source code.
+- It is not an emulator, virtual machine, or old Macintosh application.
+- It is not a wrapper around the JSKidPix website.
+- It does not bundle the Classic Pack inside the public repository or IPA.
+- It does not claim that the KID PIX trademark or every historical asset has been independently cleared by this project.
+
+## How it was made
+
+KidPad uses the pinned [`vikrum/kidpix@99c67f3`](https://github.com/vikrum/kidpix/tree/99c67f3427d229f7db60b03dcf19df4d8c2a8ecf) project as its behavior and asset reference.
+
+1. **The tools were studied.** KidPad follows the tool catalogs, menus, brush choices, sounds, and visible behavior exposed by that exact JSKidPix revision.
+2. **The drawing engine was rebuilt.** Pencil, shapes, Wacky Brush, Electric Mixer, Fill, Eraser, Alphabet, Rubber Stamps, Moving Van, Undo, documents, and input handling were implemented as native Swift code.
+3. **The interface was adapted for iPad.** The classic workspace was preserved while adding Apple Pencil pressure, responsive layouts, left-handed mode, touch-sized controls, and two-finger canvas navigation.
+4. **The classic presentation was restored.** After installation, the app can use the familiar PNG and WAV resources from the pinned JSKidPix Classic Pack.
+5. **The public build was separated from the pack.** Release builds contain the native app and a separately licensed font, while the optional Classic Pack is obtained only after the user chooses to download it.
+
+The result is a native recreation, not a mechanical conversion of JavaScript and not an emulated copy of the old application. Some complex effects remain native approximations; [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md) records those differences.
+
+## How the Classic Pack works
+
+KidPad's public source tree and IPA do not contain the classic artwork or sounds.
+
+On first launch:
+
+1. KidPad explains what the Classic Pack contains and where it comes from.
+2. The user chooses whether to download it.
+3. KidPad fetches 228 PNG and WAV data files directly from the immutable JSKidPix commit above.
+4. The app verifies the complete file catalog and whole-pack SHA-256 digest.
+5. Only a complete, verified pack is installed in the app's private Application Support directory.
+6. The native workspace opens and uses those resources for its interface, stamps, brushes, and sounds.
+
+No JavaScript or executable code is downloaded or run. If the download is refused, interrupted, or fails verification, the pack is not installed.
+
+## Rights basis and remaining uncertainty
+
+This section explains the project's distribution basis. It is not legal advice or a guarantee of clearance.
+
+### Native KidPad code
+
+KidPad's Swift, SwiftUI, UIKit, Core Graphics, tests, build scripts, and documentation are original project code released under the [Apache License 2.0](LICENSE).
+
+### JSKidPix and the Classic Pack
+
+The upstream JSKidPix repository:
+
+- is published under the [GNU General Public License v3.0](https://github.com/vikrum/kidpix/blob/99c67f3427d229f7db60b03dcf19df4d8c2a8ecf/LICENSE);
+- publicly provides the PNG and WAV files used by the Classic Pack; and
+- states in its README that the original 1989 Kid Pix 1.0 was released into the public domain.
+
+KidPad relies on that upstream publication, license, and statement as the basis for obtaining the pack. It pins one immutable commit, sends users to the upstream source and license, requires an affirmative download choice, and does not redistribute the pack inside the KidPad repository or application binary.
+
+That structure makes the source of every downloaded file explicit, but it does not independently prove that every historical image, sound, logo, or other underlying work is in the public domain or was separately cleared by the upstream publisher. Public availability alone is not proof of ownership. The detailed boundary is documented in [`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md), [`NOTICE`](NOTICE), and [`AssetLedger.json`](AssetLedger.json).
+
+### Name and trademark
+
+[Software MacKiev identifies KID PIX as its registered trademark](https://www.natura.kidpix.com/techsupport/winkidpix/support.html?ext=yes). KidPad uses the words “Kid Pix” to identify the experience being recreated, but KidPad is a separate product name and this project is not affiliated with, endorsed by, sponsored by, or licensed by Software MacKiev or any other Kid Pix rights holder.
+
+In practical terms: this is intended to be Kid Pix on iPad, but it is not an official Kid Pix release.
 
 ## Version 1 status
 
@@ -33,7 +102,7 @@ Version 1 has been exercised end to end on a physical iPad Pro with Apple Pencil
 | Download a hosted IPA | Not published yet |
 | App Store or TestFlight | Not announced |
 
-The current Version 1 candidate was accepted on an iPad Pro 12.9-inch (6th generation) after a clean AltStore installation. Apple Pencil drawing and pressure feel were accepted by hands-on testing, including the lower-latency brush pipeline. Tilt, hover, double-tap, squeeze, roll, and the complete palm-rejection matrix remain targeted hardware checks rather than completed claims.
+Version 1 was accepted on an iPad Pro 12.9-inch (6th generation) after a clean AltStore installation. First-run Classic Pack setup, Apple Pencil drawing, pressure response, and the lower-latency brush pipeline were exercised on hardware. Tilt, hover, double-tap, squeeze, roll, and the complete palm-rejection matrix remain targeted checks rather than completed claims.
 
 ## What works
 
@@ -49,19 +118,6 @@ The current Version 1 candidate was accepted on an iPad Pro 12.9-inch (6th gener
 | Audio | Goodies mute control and bounded sound playback |
 | Platforms | iPadOS 17 or later and macOS through Mac Catalyst |
 
-## First launch
-
-KidPad's public app bundle contains the native app, its original interface resources, and a separately licensed font. It does not contain the classic artwork or sounds.
-
-On first launch:
-
-1. KidPad explains the optional Classic Pack download.
-2. If the user chooses **Download Classic Pack**, KidPad fetches 228 PNG and WAV data files from the immutable [`vikrum/kidpix@99c67f3`](https://github.com/vikrum/kidpix/tree/99c67f3427d229f7db60b03dcf19df4d8c2a8ecf) revision.
-3. KidPad verifies the complete pack digest, then installs the data atomically in Application Support.
-4. The drawing workspace opens and uses the installed data normally.
-
-No JavaScript or executable code is downloaded. The choice is user initiated, and a failed or incomplete verification does not install the pack.
-
 ## Build and run
 
 Requirements:
@@ -76,9 +132,9 @@ cd kidpad
 Scripts/build_public.sh
 ```
 
-The script builds the `ReleasePublic` configuration in isolated derived data and scans the resulting app bundle for excluded research assets. To run from Xcode, open `KidPad.xcodeproj`, select the `KidPad` scheme, choose an iPad Simulator or connected iPad, and press Run.
+The script builds `ReleasePublic` in isolated derived data and scans the resulting app bundle for excluded research assets. To run from Xcode, open `KidPad.xcodeproj`, select the `KidPad` scheme, choose an iPad Simulator or connected iPad, and press Run.
 
-For Mac, select **My Mac (Mac Catalyst)** and build the `ReleasePublic` configuration. A raw iOS `.app` cannot be copied into `/Applications`; Mac Catalyst produces the correct macOS executable format.
+For Mac, select **My Mac (Mac Catalyst)** and build `ReleasePublic`. A raw iOS `.app` cannot be copied into `/Applications`; Mac Catalyst produces the correct macOS executable format.
 
 See [`docs/BUILDING.md`](docs/BUILDING.md) for clean-machine steps, tests, signing notes, and the local packaging workflow.
 
@@ -90,20 +146,33 @@ Scripts/package_public_ipa.sh
 
 This creates `build/releases/KidPad-unsigned.ipa` and a SHA-256 checksum. The unsigned IPA must be signed for the destination device by Xcode, AltStore, or another signing service. It contains no Classic Pack and prompts for the optional download after installation.
 
-KidPad does not currently publish a prebuilt IPA from this repository. That release artifact can be added separately without changing the source or asset boundary.
+KidPad does not currently publish a prebuilt IPA from this repository. That artifact can be added separately without changing the source or Classic Pack boundary.
 
-## Why the public bundle is data-free
+## Frequently asked questions
 
-The repository keeps the native application separate from historical reference material:
+### Is this actually Kid Pix on iPad?
 
-- `Sources/`, `Tests/`, `UITests/`, and `KidPad.xcodeproj` are the native app.
-- `Resources/Licensed/` contains only resources whose redistribution terms are documented.
-- `Resources/FidelityDev/` is an ignored local test cache; only its README is tracked.
-- `Resources/JSKidPix/` and the optional local web reference are excluded from public builds.
-- `Sources/ClassicAssetPack.swift` pins the approved file catalog, upstream URLs, and whole-pack digest.
-- `Scripts/verify_release_assets.sh` scans every public build before it is shared.
+That is the goal and the intended experience. KidPad recreates the recognizable Kid Pix workspace, tools, artwork, and sounds as a native iPad app. It is unofficial and independently developed.
 
-This technical separation reduces accidental redistribution. It is not a statement that third-party artwork, sounds, names, or trademarks are in the public domain. Read [`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md) before distributing a binary or changing the resource boundary.
+### Does it use the classic Kid Pix artwork and sounds?
+
+Yes. After the user agrees, KidPad downloads the pinned Classic Pack directly from JSKidPix and verifies it before use. Those files are not stored in this repository or bundled in the IPA.
+
+### Is it running the JSKidPix website?
+
+No. The product canvas and tools are native Swift code. An optional local web reference exists only for development comparison and is excluded from public builds.
+
+### Is Kid Pix definitely in the public domain?
+
+The JSKidPix project states that the original 1989 Kid Pix 1.0 was released into the public domain, and it publishes its repository under GPL-3.0. KidPad relies on that upstream position, but this project has not independently established the status of every underlying asset or trademark.
+
+### Why download the Classic Pack after installation?
+
+It keeps the native KidPad source and binary separate from the upstream data, makes the source and license visible, gives the user a clear choice, and allows the app to verify an exact immutable revision.
+
+### Is this official?
+
+No. KidPad is not associated with Software MacKiev or another Kid Pix rights holder.
 
 ## Test and verify
 
@@ -120,7 +189,7 @@ Behavior status and remaining validation gaps are tracked in [`docs/PARITY_MATRI
 
 ## Project map
 
-- [`Sources/`](Sources/) contains the Swift app, native canvas, input, documents, audio, and Classic Pack installer.
+- [`Sources/`](Sources/) contains the native app, canvas, input, documents, audio, and Classic Pack installer.
 - [`Tests/`](Tests/) and [`UITests/`](UITests/) contain automated coverage.
 - [`docs/BUILDING.md`](docs/BUILDING.md) is the reproducible build and validation guide.
 - [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md) records tool-by-tool behavior status.
@@ -138,4 +207,4 @@ Do not commit credentials, signing material, copied historical assets, or a loca
 
 KidPad's native source is licensed under the [Apache License 2.0](LICENSE). Third-party and downloaded material has separate terms documented in [`NOTICE`](NOTICE), [`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md), and [`docs/THIRD_PARTY_FONTS.md`](docs/THIRD_PARTY_FONTS.md).
 
-KidPad is inspired by the design language and creative spirit of early Kid Pix. It is not endorsed by, sponsored by, or affiliated with The Software MacKiev Company, Craig Hickman, or any current Kid Pix rights holder.
+Kid Pix was created by Craig Hickman. KidPad credits the [JSKidPix project](https://github.com/vikrum/kidpix) as its pinned behavior and Classic Pack source. KID PIX is a registered trademark of Software MacKiev. KidPad is an independent project and is not endorsed by or affiliated with the trademark owner.
