@@ -13,6 +13,8 @@
   <img alt="Swift 6" src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white">
   <img alt="Physical iPad tested" src="https://img.shields.io/badge/physical%20iPad-tested-34C759">
   <img alt="Apache 2.0 source license" src="https://img.shields.io/badge/source%20license-Apache--2.0-blue">
+  <a href="https://github.com/chrissotraidis/padmint"><img alt="KidPad setup in PadMint" src="https://img.shields.io/badge/PadMint-guided%20setup-3EB489"></a>
+  <a href="https://discord.gg/xwHfUD2bxW"><img alt="Join the KidPad Discord" src="https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?logo=discord&amp;logoColor=white"></a>
 </p>
 
 ![KidPad Version 1 running on a physical iPad](docs/readme/kidpad-ipad-v1.png)
@@ -259,6 +261,16 @@ Behavior status and remaining validation gaps are tracked in [`docs/PARITY_MATRI
 Focused fixes, documentation improvements, clean-room assets, and reproducible bug reports are welcome. Include the build profile, device or Simulator version, reproduction steps, expected behavior, and a screenshot when it helps explain the issue.
 
 Do not commit credentials, signing material, copied historical assets, or a local JSKidPix reference bundle. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), and use [`SECURITY.md`](SECURITY.md) for security-sensitive reports.
+
+## Community and support
+
+[Join the Discord](https://discord.gg/xwHfUD2bxW) for help and news. It is one
+community for KidPad and its sibling projects, such as KartPad, BlueWake and
+MeleePad: ask about setup and installing, share how it runs on your device, and
+hear about new releases first.
+
+Found a bug? [Open an issue](https://github.com/chrissotraidis/kidpad/issues)
+with your device, its OS version, and the steps that led to it.
 
 ## License and acknowledgements
 
