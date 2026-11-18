@@ -3,7 +3,7 @@ set -euo pipefail
 
 project_dir="${PROJECT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 output_dir="${KIDPAD_OUTPUT_DIR:-$project_dir/build/releases}"
-release_version="${KIDPAD_RELEASE_VERSION:-2.0.0}"
+release_version="${KIDPAD_RELEASE_VERSION:-2.0.1}"
 release_basename="KidPad-v${release_version}-unsigned"
 derived_dir="$(mktemp -d /tmp/kidpad-public-device.XXXXXX)"
 stage_dir="$(mktemp -d /tmp/kidpad-public-ipa.XXXXXX)"
