@@ -2,6 +2,20 @@
 
 All notable public releases of KidPad are documented here.
 
+## 2.0.1 - 2026-11-21
+
+KidPad 2.0.1 works on a TV or monitor connected to an iPad, and PadMint can open it.
+
+### Highlights
+
+- On an iPad's extended display, KidPad now fills the screen the right way up; the iPad accepts every orientation so iPadOS no longer leaves it rotated or squeezed on the external screen. iPhone keeps portrait and landscape.
+- KidPad answers `padmint-kidpad://`, so PadMint's library shows it as installed and starts it.
+
+### Validation
+
+- Installed over 2.0.0 on an iPad Pro and played on a 1280×720 TV with the Classic Pack and saved drawings kept (November 2026).
+- The public release gate (repository and network boundaries, public build, IPA packaging and asset policy) passes from a clean checkout of `main`.
+
 ## 2.0.0 - 2026-08-23
 
 KidPad Version 2 adds native iPhone support while preserving the accepted iPad experience.
